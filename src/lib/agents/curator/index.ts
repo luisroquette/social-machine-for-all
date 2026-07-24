@@ -13,11 +13,9 @@ import { getInstagramAccountReels } from '@/lib/platforms/instagram/reader'
 import { getInstagramCredentials } from '@/lib/settings/load-credentials'
 import { fetchRssFeed } from '@/lib/platforms/rss/reader'
 import { hasNegativeEvFraming } from '@/lib/brand/brand-brand-safety'
+import { loadWorkspaceFeatures } from '@/lib/config/workspace-features'
 
-// ── Brand workspace ───────────────────────────────────────────────────────
-const BRAND_WORKSPACE = '00000000-0000-0000-0000-000000000000'
-
-// Keywords required for a video to be reel_eligible in the Brand workspace.
+// Keywords required for a video to be reel_eligible when EV curation is enabled.
 // At least one must appear in the tweet text (case-insensitive).
 const BRAND_REEL_KEYWORDS = [
   // ── EV / vehicles (EN) ────────────────────────────────────────────────────
@@ -168,14 +166,14 @@ export const BRAND_NONEV_BLOCKLIST = [
   'copilot+', 'copilot studio', 'microsoft build',    // Microsoft AI events/products
 ]
 
-export function isCompetitorAccount(authorHandle: string, workspaceId: string): boolean {
-  if (workspaceId !== BRAND_WORKSPACE) return false
+export function isCompetitorAccount(authorHandle: string, evMarketCuration = false): boolean {
+  if (!evMarketCuration) return false
   const lower = authorHandle.toLowerCase().replace(/^@/, '')
   return BRAND_COMPETITOR_ACCOUNTS.some(acc => lower === acc || lower.startsWith(acc))
 }
 
-export function isTopicRelevant(text: string, workspaceId: string): boolean {
-  if (workspaceId !== BRAND_WORKSPACE) return true  // no filter for other workspaces
+export function isTopicRelevant(text: string, evMarketCuration = false): boolean {
+  if (!evMarketCuration) return true
   const lower = text.toLowerCase()
   // Brand safety: EV associado a perigo (incêndio, acidente, recall) nunca entra.
   // A brand VENDE eletromobilidade — manchete de medo afasta o comprador.
@@ -216,6 +214,7 @@ class CuratorAgent extends BaseAgent {
     const startTime = Date.now()
     let totalCurated = 0
     const errors: string[] = []
+    const features = await loadWorkspaceFeatures(ctx.workspaceId)
 
     // ── Load configurable thresholds from settings ──
     const reelMinRelevanceScore = await getNumericVariable(ctx.workspaceId, 'reel_min_relevance_score')
@@ -277,9 +276,9 @@ class CuratorAgent extends BaseAgent {
     // CHINESE WALL: RADAR_QUERIES are AI/tech focused — never run for brandmob.
     try {
       const { RADAR_QUERIES, RADAR_QUERIES_EV } = await import('@/lib/platforms/x/radar-queries')
-      const activeQueries = ctx.workspaceId === BRAND_WORKSPACE ? RADAR_QUERIES_EV : RADAR_QUERIES
+      const activeQueries = features.ev_market_curation ? RADAR_QUERIES_EV : RADAR_QUERIES
       const twitterApiIoKey = process.env.TWITTERAPI_IO_KEY
-      console.log(`[curator] Radar source: ${twitterApiIoKey ? 'TwitterAPI.io' : 'X API'} (${activeQueries.length} queries) [${ctx.workspaceId === BRAND_WORKSPACE ? 'EV' : 'AI'}]`)
+      console.log(`[curator] Radar source: ${twitterApiIoKey ? 'TwitterAPI.io' : 'X API'} (${activeQueries.length} queries) [${features.ev_market_curation ? 'EV' : 'standard'}]`)
 
       for (const rq of activeQueries) {
         try {
@@ -289,7 +288,7 @@ class CuratorAgent extends BaseAgent {
             const result = await searchTwitterApiIo(rq.query, twitterApiIoKey)
             for (const t of result.tweets) {
               if ((t.text?.length ?? 0) < curatorMinTextLength) continue
-              if (isCompetitorAccount(t.author?.userName ?? '', ctx.workspaceId)) {
+              if (isCompetitorAccount(t.author?.userName ?? '', features.ev_market_curation)) {
                 console.log(`[curator] 🚫 Skipping competitor account @${t.author?.userName} (EV operator blocklist)`)
                 continue
               }
@@ -388,7 +387,7 @@ class CuratorAgent extends BaseAgent {
 
           const filtered = tweets.filter(tw =>
             tw.text.length >= curatorMinTextLength &&
-            !isCompetitorAccount(tw.authorHandle, ctx.workspaceId)
+            !isCompetitorAccount(tw.authorHandle, features.ev_market_curation)
           )
           for (const t of filtered) {
             allTweets.push({ ...t, source: 'profile' })
@@ -425,13 +424,13 @@ class CuratorAgent extends BaseAgent {
         try {
           // PT-BR keywords (accented chars) → force lang:pt for brandmob
           const hasPtAccent = /[áãâéêíóõôúçÁÃÂÉÊÍÓÕÔÚÇ]/.test(kw)
-          const langFilter = (ctx.workspaceId === BRAND_WORKSPACE && hasPtAccent) ? ' lang:pt' : ''
+          const langFilter = (features.ev_market_curation && hasPtAccent) ? ' lang:pt' : ''
           const tweets = await searchTweets(`${kw} has:videos -is:retweet${langFilter}`, 10)
           // Minimum 1000 followers on keyword search — blocks bots and spam accounts
           const filtered = tweets.filter(tw =>
             tw.text.length >= curatorMinTextLength &&
             tw.authorFollowers >= 1000 &&
-            !isCompetitorAccount(tw.authorHandle, ctx.workspaceId)
+            !isCompetitorAccount(tw.authorHandle, features.ev_market_curation)
           )
           for (const t of filtered) {
             allTweets.push({ ...t, source: 'keyword' })
@@ -503,7 +502,7 @@ class CuratorAgent extends BaseAgent {
       }
 
       // Workspace topic filter: for Brand, only accept EV/energy/charging content
-      if (!isTopicRelevant(t.text, ctx.workspaceId)) {
+      if (!isTopicRelevant(t.text, features.ev_market_curation)) {
         return { ...t, virality: { ...virality, score: 0 }, ctaContent: false }
       }
 
@@ -519,7 +518,7 @@ class CuratorAgent extends BaseAgent {
 
       // Optimization 9 (brandmob only): B2B niche boost — rewards industry-specific content
       // over generic viral posts that happen to mention EVs. Stacks with PT-BR boost.
-      if (ctx.workspaceId === BRAND_WORKSPACE) {
+      if (features.ev_market_curation) {
         const B2B_HIGH_VALUE = [
           'ocpp', 'ccs2', 'mennekes', 'sae j1772', 'dc fast', 'charging infrastructure',
           'eletroposto', 'fleet electrification', 'frota elétrica', 'frota eletrica',
@@ -567,7 +566,7 @@ class CuratorAgent extends BaseAgent {
       // Posts que oferecem recurso distribuível (repo, guia, lista, template) em troca de
       // comentário/DM sobem naturalmente na fila — o Writer fecha ~1 em 4 com o gatilho.
       let ctaContent = false
-      if (ctx.workspaceId !== BRAND_WORKSPACE) {
+      if (!features.ev_market_curation) {
         ctaContent = CTA_BOOST_PATTERNS.some(p => textLower.includes(p))
         if (ctaContent) {
           adjustedScore = Math.min(100, adjustedScore + 12)
@@ -652,7 +651,7 @@ class CuratorAgent extends BaseAgent {
         // Classify content category based on keywords (lightweight, no AI call)
         const textLower = tweet.text.toLowerCase()
         let category = 'news'
-        if (ctx.workspaceId === BRAND_WORKSPACE) {
+        if (features.ev_market_curation) {
           // EV B2B taxonomy — more actionable for the writer than generic AI categories
           if (/ocpp|ccs2|chademo|mennekes|sae j1772|v2g|v2h|v2b|smart charging|load balanc|peak shav|demand response/.test(textLower)) category = 'ev_technical'
           else if (/frota|fleet|frot[a]|frotas|gestão de frota|gestao de frota|corporate ev|commercial ev|empresa|b2b/.test(textLower)) category = 'ev_fleet'
@@ -706,7 +705,7 @@ class CuratorAgent extends BaseAgent {
               Array.isArray(tweet.mediaTypes) &&
               tweet.mediaTypes.includes('video') &&
               tweet.virality.score >= reelMinRelevanceScore &&
-              isTopicRelevant(tweet.text, ctx.workspaceId)
+              isTopicRelevant(tweet.text, features.ev_market_curation)
             ),
             virality: {
               score: tweet.virality.score,
@@ -728,7 +727,7 @@ class CuratorAgent extends BaseAgent {
     // Strategy: max 8 channels per run (oldest first), each re-checked after 24h.
     //           keyword search gated to once every 12h.
     //           Stop immediately on first 403 to avoid spam.
-    if (ctx.workspaceId === BRAND_WORKSPACE) {
+    if (features.ev_market_curation) {
       try {
         const ytChannelsPerRun = 8
         const ytChannelStaleMs = 24 * 60 * 60 * 1000  // 24h between checks per channel
@@ -767,7 +766,7 @@ class CuratorAgent extends BaseAgent {
             for (const video of videos) {
               if (existingUrls.has(video.videoUrl)) continue
               const text = `${video.title}\n\n${video.description}`
-              if (!isTopicRelevant(text, ctx.workspaceId)) continue
+              if (!isTopicRelevant(text, features.ev_market_curation)) continue
               rowsToInsert.push({
                 workspace_id: ctx.workspaceId,
                 source_platform: 'youtube',
@@ -815,7 +814,7 @@ class CuratorAgent extends BaseAgent {
                 for (const video of videos) {
                   if (existingUrls.has(video.videoUrl)) continue
                   const text = `${video.title}\n\n${video.description}`
-                  if (!isTopicRelevant(text, ctx.workspaceId)) continue
+                  if (!isTopicRelevant(text, features.ev_market_curation)) continue
                   rowsToInsert.push({
                     workspace_id: ctx.workspaceId,
                     source_platform: 'youtube',
@@ -851,7 +850,7 @@ class CuratorAgent extends BaseAgent {
 
     // ── Source 5: Instagram account monitoring (Brand only) ─────────────
     const igRowsForArchive: Array<Record<string, unknown>> = []
-    if (ctx.workspaceId === BRAND_WORKSPACE) {
+    if (features.ev_market_curation) {
       try {
         const igCreds = await getInstagramCredentials(ctx.workspaceId)
         const { data: igProfiles } = await supabase
@@ -873,7 +872,7 @@ class CuratorAgent extends BaseAgent {
 
             for (const reel of reels) {
               if (existingUrls.has(reel.permalink)) continue
-              const isRelevant = isTopicRelevant(reel.caption, ctx.workspaceId)
+              const isRelevant = isTopicRelevant(reel.caption, features.ev_market_curation)
               const row: Record<string, unknown> = {
                 workspace_id: ctx.workspaceId,
                 source_platform: 'instagram',
@@ -929,12 +928,12 @@ class CuratorAgent extends BaseAgent {
             if (feed.feed_url === item.link) break  // already processed up to here
 
             const text = `${item.title}\n\n${item.description}`
-            if (!isTopicRelevant(text, ctx.workspaceId)) continue
+            if (!isTopicRelevant(text, features.ev_market_curation)) continue
 
             // Classify EV B2B category for brandmob
             const tl = text.toLowerCase()
-            let rssCategory = ctx.workspaceId === BRAND_WORKSPACE ? 'ev_news' : 'news'
-            if (ctx.workspaceId === BRAND_WORKSPACE) {
+            let rssCategory = features.ev_market_curation ? 'ev_news' : 'news'
+            if (features.ev_market_curation) {
               if (/ocpp|ccs2|v2g|smart charging|load balanc/.test(tl)) rssCategory = 'ev_technical'
               else if (/frota|fleet|corporate ev|commercial ev/.test(tl)) rssCategory = 'ev_fleet'
               else if (/eletroposto|charging station|charging infra|condom[ií]nio|parking/.test(tl)) rssCategory = 'ev_infrastructure'
@@ -1048,7 +1047,7 @@ class CuratorAgent extends BaseAgent {
           // ── 6b. Archive reel-eligible videos to Supabase Storage ──────────
           // Twitter video URLs expire in ~48h. Downloading immediately gives us
           // a permanent URL so reels can be produced 1-7 days after curation.
-          if (ctx.workspaceId === BRAND_WORKSPACE) {
+          if (features.video_reels) {
             const reelRows = rowsToInsert.filter(r => {
               const sm = r.source_metrics as Record<string, unknown>
               return sm?.reel_eligible === true && sm?.video_url

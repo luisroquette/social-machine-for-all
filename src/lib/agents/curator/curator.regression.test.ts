@@ -27,8 +27,8 @@ const __testdir = path.dirname(fileURLToPath(import.meta.url))
 const CURATOR_SRC = path.resolve(__testdir, './index.ts')
 const TWITTERAPI_IO_SRC = path.resolve(__testdir, '../../platforms/x/twitterapi-io.ts')
 
-const BRAND_WORKSPACE = '00000000-0000-0000-0000-000000000000'
-const OTHER_WORKSPACE = '22222222-2222-4222-8222-222222222222'
+const EV_FEATURE_ENABLED = true
+const EV_FEATURE_DISABLED = false
 
 describe('REGRESSÃO: Source 3 keyword search — has:videos sem lang:en', () => {
   it('Source 3 usa has:videos (não has:links)', () => {
@@ -95,42 +95,42 @@ describe('REGRESSÃO: nome da env var twitterapi.io — TWITTERAPI_IO_KEY', () =
 describe('REGRESSÃO: isTopicRelevant — brandmob chinese wall (bug 2026-06-05)', () => {
   it('Microsoft Copilot Autopilot → BLOQUEADO para brandmob', () => {
     const text = 'Microsoft anuncia Copilot como super app com conceito de Autopilots — agentes autônomos que rodam continuamente. Scout é o primeiro Agent disponível.'
-    expect(isTopicRelevant(text, BRAND_WORKSPACE)).toBe(false)
+    expect(isTopicRelevant(text, EV_FEATURE_ENABLED)).toBe(false)
   })
 
   it('Microsoft Build Copilot → BLOQUEADO para brandmob', () => {
     const text = 'Microsoft Build revela hoje o Copilot super app — unificando Copilot, Cowork, GitHub Copilot e novo Autopilot Scout Agent. Além do MAI Image 2.5 já anunciado, esperam MAI Voice 2 e MAI Transcribe 1.5.'
-    expect(isTopicRelevant(text, BRAND_WORKSPACE)).toBe(false)
+    expect(isTopicRelevant(text, EV_FEATURE_ENABLED)).toBe(false)
   })
 
   it('NVIDIA/Marvell artigo financeiro com Tesla mencionado → BLOQUEADO para brandmob', () => {
     const text = 'Marvell dispara 32,6% após CEO da NVIDIA citar a empresa como "próxima trilionária". O setor de semicondutores reagiu em cadeia: Broadcom +4,7%, ASML +4,7%. Enquanto isso, Tesla registra +1,9% com vendas de EVs na China crescendo 39,4%.'
-    expect(isTopicRelevant(text, BRAND_WORKSPACE)).toBe(false)
+    expect(isTopicRelevant(text, EV_FEATURE_ENABLED)).toBe(false)
   })
 
   it('Cursor Pro para universitários → BLOQUEADO para brandmob', () => {
     const text = 'Estudantes pagam $0 por ferramenta de IA que custa $240/ano. Cursor Pro libera 12 meses gratuitos para universitários — mesmo produto que empresas pagam $20/mês. Inclusos: Claude, GPT, Gemini + agent mode.'
-    expect(isTopicRelevant(text, BRAND_WORKSPACE)).toBe(false)
+    expect(isTopicRelevant(text, EV_FEATURE_ENABLED)).toBe(false)
   })
 
   it('BYD lança EV com 1000km de autonomia → APROVADO para brandmob', () => {
     const text = 'BYD lança novo modelo EV com bateria de 1000km de autonomia no Brasil em 2026 para frotas corporativas. Eletroposto DC Fast para recarga em 15 minutos.'
-    expect(isTopicRelevant(text, BRAND_WORKSPACE)).toBe(true)
+    expect(isTopicRelevant(text, EV_FEATURE_ENABLED)).toBe(true)
   })
 
   it('Tesla Model Y para frota corporativa → APROVADO para brandmob', () => {
     const text = 'Tesla Model Y atinge 50.000 unidades vendidas para frotas corporativas no Brasil. Recarga via supercharger em 20 minutos.'
-    expect(isTopicRelevant(text, BRAND_WORKSPACE)).toBe(true)
+    expect(isTopicRelevant(text, EV_FEATURE_ENABLED)).toBe(true)
   })
 
   it('Eletroposto DC Fast em condomínio → APROVADO para brandmob', () => {
     const text = 'Eletroposto DC Fast instalado em condomínio residencial em BH. Brand implementa infraestrutura de recarga completa do projeto à instalação.'
-    expect(isTopicRelevant(text, BRAND_WORKSPACE)).toBe(true)
+    expect(isTopicRelevant(text, EV_FEATURE_ENABLED)).toBe(true)
   })
 
   it('Conteúdo de IA tech é APROVADO para workspace AI&Tech (não afeta @thedoomguy_ai)', () => {
     const text = 'Microsoft Copilot Autopilot agents rodam autonomamente. Claude AI supera GPT-4 em benchmarks.'
-    expect(isTopicRelevant(text, OTHER_WORKSPACE)).toBe(true)
+    expect(isTopicRelevant(text, EV_FEATURE_DISABLED)).toBe(true)
   })
 })
 
@@ -153,10 +153,10 @@ describe('REGRESSÃO: BRAND_NONEV_BLOCKLIST — lista não deve encolher', () =>
 })
 
 describe('REGRESSÃO: RADAR_QUERIES não roda para brandmob (bug 2026-06-05)', () => {
-  it('curator/index.ts tem guard explícito que skipa Source 1 para BRAND_WORKSPACE', () => {
+  it('curator/index.ts tem guard explícito que skipa Source 1 para EV_FEATURE_ENABLED', () => {
     const src = fs.readFileSync(CURATOR_SRC, 'utf-8')
     // Guard deve existir antes do bloco RADAR_QUERIES
-    expect(src).toContain('BRAND_WORKSPACE') // constant exists
+    expect(src).toContain('features.ev_market_curation')
     // The chinese wall comment must be present as documentation
     expect(src).toContain('CHINESE WALL: RADAR_QUERIES are AI/tech focused')
   })
@@ -231,12 +231,12 @@ describe('REGRESSÃO: BRAND_REEL_KEYWORDS — expansão B2B', () => {
 
   it('isTopicRelevant aprova conteúdo com eletroposto condomínio 350kW', () => {
     const text = 'Eletroposto condomínio 350kW instalado em menos de 48h. Solução B2B para frotas corporativas com recarga rápida DC.'
-    expect(isTopicRelevant(text, BRAND_WORKSPACE)).toBe(true)
+    expect(isTopicRelevant(text, EV_FEATURE_ENABLED)).toBe(true)
   })
 
   it('isTopicRelevant aprova conteúdo com OCPP e smart charging', () => {
     const text = 'Smart charging via OCPP 2.0.1 permite gerenciar 50 pontos de recarga simultaneamente. Load balancing inteligente.'
-    expect(isTopicRelevant(text, BRAND_WORKSPACE)).toBe(true)
+    expect(isTopicRelevant(text, EV_FEATURE_ENABLED)).toBe(true)
   })
 })
 
@@ -283,7 +283,7 @@ describe('REGRESSÃO: Diversidade de fonte (curator_max_per_author)', () => {
 })
 
 describe('REGRESSÃO: Taxonomia EV B2B (Problema 5)', () => {
-  it('curator usa categorias EV B2B para BRAND_WORKSPACE', () => {
+  it('curator usa categorias EV B2B para EV_FEATURE_ENABLED', () => {
     const src = fs.readFileSync(CURATOR_SRC, 'utf-8')
     expect(src).toContain("'ev_technical'")
     expect(src).toContain("'ev_fleet'")
@@ -386,10 +386,9 @@ describe('REGRESSÃO: Gap 1 — writer calibração EV B2B taxonomy', () => {
     expect(src).toContain('score_breakdown?.category')
   })
 
-  it('CATEGORIA DETECTADA é condicionado a isBrand (não vaza para AI&Tech)', () => {
+  it('CATEGORIA DETECTADA é condicionada à flag de curadoria EV', () => {
     const src = fs.readFileSync(WRITER_SRC, 'utf-8')
-    // A injeção deve estar dentro do bloco isBrand
-    const brandMobBlock = src.indexOf('isBrand && item.score_breakdown?.category')
+    const brandMobBlock = src.indexOf('features.ev_market_curation && item.score_breakdown?.category')
     expect(brandMobBlock).toBeGreaterThan(-1)
   })
 
@@ -462,8 +461,8 @@ describe('REGRESSÃO: PT-BR First — radar queries e scoring', () => {
 
   it('Source 3 só aplica lang:pt para brandmob (não vaza para AI&Tech)', () => {
     const src = fs.readFileSync(CURATOR_SRC, 'utf-8')
-    // langFilter deve ser condicionado ao BRAND_WORKSPACE
-    expect(src).toContain('BRAND_WORKSPACE && hasPtAccent')
+    // langFilter deve ser condicionado ao EV_FEATURE_ENABLED
+    expect(src).toContain('features.ev_market_curation && hasPtAccent')
   })
 })
 
@@ -527,34 +526,34 @@ describe('REGRESSÃO: Competitor account blocklist — Jun/2026 (ChargeUp incide
   // Fix: BRAND_COMPETITOR_ACCOUNTS blocklist + isCompetitorAccount() nos 3 sources.
 
   it('ChargeUpEnergy é bloqueado para Brand', () => {
-    expect(isCompetitorAccount('ChargeUpEnergy', BRAND_WORKSPACE)).toBe(true)
-    expect(isCompetitorAccount('chargeupenergymy', BRAND_WORKSPACE)).toBe(true)
+    expect(isCompetitorAccount('ChargeUpEnergy', EV_FEATURE_ENABLED)).toBe(true)
+    expect(isCompetitorAccount('chargeupenergymy', EV_FEATURE_ENABLED)).toBe(true)
   })
 
   it('ChargePoint é bloqueado para Brand', () => {
-    expect(isCompetitorAccount('ChargePoint', BRAND_WORKSPACE)).toBe(true)
-    expect(isCompetitorAccount('chargepoint_eu', BRAND_WORKSPACE)).toBe(true)
+    expect(isCompetitorAccount('ChargePoint', EV_FEATURE_ENABLED)).toBe(true)
+    expect(isCompetitorAccount('chargepoint_eu', EV_FEATURE_ENABLED)).toBe(true)
   })
 
   it('EVgo é bloqueado para Brand', () => {
-    expect(isCompetitorAccount('EVgo', BRAND_WORKSPACE)).toBe(true)
-    expect(isCompetitorAccount('evgonetwork', BRAND_WORKSPACE)).toBe(true)
+    expect(isCompetitorAccount('EVgo', EV_FEATURE_ENABLED)).toBe(true)
+    expect(isCompetitorAccount('evgonetwork', EV_FEATURE_ENABLED)).toBe(true)
   })
 
   it('WallboxEV e WallboxLatam são bloqueados para Brand', () => {
-    expect(isCompetitorAccount('WallboxEV', BRAND_WORKSPACE)).toBe(true)
-    expect(isCompetitorAccount('WallboxLatam', BRAND_WORKSPACE)).toBe(true)
+    expect(isCompetitorAccount('WallboxEV', EV_FEATURE_ENABLED)).toBe(true)
+    expect(isCompetitorAccount('WallboxLatam', EV_FEATURE_ENABLED)).toBe(true)
   })
 
   it('Tesla, BYDCompany, Rivian NÃO são bloqueados (fabricantes, não operadoras)', () => {
-    expect(isCompetitorAccount('Tesla', BRAND_WORKSPACE)).toBe(false)
-    expect(isCompetitorAccount('BYDCompany', BRAND_WORKSPACE)).toBe(false)
-    expect(isCompetitorAccount('Rivian', BRAND_WORKSPACE)).toBe(false)
+    expect(isCompetitorAccount('Tesla', EV_FEATURE_ENABLED)).toBe(false)
+    expect(isCompetitorAccount('BYDCompany', EV_FEATURE_ENABLED)).toBe(false)
+    expect(isCompetitorAccount('Rivian', EV_FEATURE_ENABLED)).toBe(false)
   })
 
   it('Nenhuma conta é bloqueada para workspace AI&Tech', () => {
-    expect(isCompetitorAccount('ChargePoint', OTHER_WORKSPACE)).toBe(false)
-    expect(isCompetitorAccount('EVgo', OTHER_WORKSPACE)).toBe(false)
+    expect(isCompetitorAccount('ChargePoint', EV_FEATURE_DISABLED)).toBe(false)
+    expect(isCompetitorAccount('EVgo', EV_FEATURE_DISABLED)).toBe(false)
   })
 
   it('ev-breaking-brands não contém operadoras concorrentes', () => {
