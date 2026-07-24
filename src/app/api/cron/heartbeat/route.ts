@@ -12,7 +12,8 @@ import { createDbErrorCollector, guardCount, guardData } from '@/lib/monitoring/
 const ALERT_EMAIL = 'lfrprojects.ai@gmail.com'
 const EMAIL_COOLDOWN_MS = 4 * 60 * 60 * 1000 // 4h entre emails do mesmo alerta
 
-const brandMOB_WS = '00000000-0000-0000-0000-000000000000'
+// Optional second workspace monitored by this installation. It is never bundled.
+const SECONDARY_WORKSPACE_ID = process.env.SECONDARY_WORKSPACE_ID?.trim() || ''
 
 /**
  * Health check — runs every 15 minutes.
@@ -21,6 +22,9 @@ const brandMOB_WS = '00000000-0000-0000-0000-000000000000'
 export async function GET(request: Request) {
   if (!isCronRequest(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  if (!WORKSPACE_ID) {
+    return NextResponse.json({ error: 'WORKSPACE_ID is not configured' }, { status: 503 })
   }
 
   // Respect quiet hours — no alerts between 22:00 and 08:00 BRT
@@ -178,18 +182,18 @@ export async function GET(request: Request) {
     } catch { /* falha de rede transitória — não marca como expirado */ }
   }
 
-  // Mesmo check acima, espelhado pro Brand — achado 2026-07-11: este heartbeat
-  // já monitora reel_ready/failed/published do @brand, mas o token de Instagram
-  // dele (conta própria, brandMOB_WS) nunca era checado. Se expirasse, ninguém seria avisado.
-  let igTokenExpiredbrand = false
-  const { igUserId: igUserIdbrand, accessToken: igTokenbrand } = await getInstagramCredentials(brandMOB_WS)
-  if (igTokenbrand && igUserIdbrand) {
-    const igBasebrand = igTokenbrand.startsWith('IGAA')
+  // Mesmo check acima, espelhado pro secondary workspace — achado 2026-07-11: este heartbeat
+  // já monitora reel_ready/failed/published do @secondary, mas o token de Instagram
+  // dele (conta própria, SECONDARY_WORKSPACE_ID) nunca era checado. Se expirasse, ninguém seria avisado.
+  let secondaryIgTokenExpired = false
+  const { igUserId: secondaryIgUserId, accessToken: secondaryIgToken } = await getInstagramCredentials(SECONDARY_WORKSPACE_ID)
+  if (secondaryIgToken && secondaryIgUserId) {
+    const secondaryIgBase = secondaryIgToken.startsWith('IGAA')
       ? 'https://graph.instagram.com/v21.0'
       : 'https://graph.facebook.com/v21.0'
     try {
-      const igCheckbrand = await fetch(`${igBasebrand}/${igUserIdbrand}?fields=id&access_token=${igTokenbrand}`, { signal: AbortSignal.timeout(10_000) })
-      if (igCheckbrand.status === 400 || igCheckbrand.status === 401) igTokenExpiredbrand = true
+      const secondaryIgCheck = await fetch(`${secondaryIgBase}/${secondaryIgUserId}?fields=id&access_token=${secondaryIgToken}`, { signal: AbortSignal.timeout(10_000) })
+      if (secondaryIgCheck.status === 400 || secondaryIgCheck.status === 401) secondaryIgTokenExpired = true
     } catch { /* falha de rede transitória — não marca como expirado */ }
   }
 
@@ -215,10 +219,10 @@ export async function GET(request: Request) {
     .eq('target_format', 'reel')
     .eq('status', 'reel_ready'))
 
-  const reelReadybrand = guardCount(dbGuard, 'generated_content.reel_ready_brand', await supabase
+  const secondaryReelReady = guardCount(dbGuard, 'generated_content.reel_ready_secondary', await supabase
     .from('generated_content')
     .select('*', { count: 'exact', head: true })
-    .eq('workspace_id', brandMOB_WS)
+    .eq('workspace_id', SECONDARY_WORKSPACE_ID)
     .eq('target_format', 'reel')
     .eq('status', 'reel_ready'))
 
@@ -231,10 +235,10 @@ export async function GET(request: Request) {
     .eq('status', 'publishing')
     .lt('updated_at', thirtyMinAgo))
 
-  const failedReelsbrand = guardCount(dbGuard, 'generated_content.failed_reels_brand', await supabase
+  const secondaryFailedReels = guardCount(dbGuard, 'generated_content.failed_reels_secondary', await supabase
     .from('generated_content')
     .select('*', { count: 'exact', head: true })
-    .eq('workspace_id', brandMOB_WS)
+    .eq('workspace_id', SECONDARY_WORKSPACE_ID)
     .eq('target_format', 'reel')
     .eq('status', 'failed')
     .gte('created_at', sixHoursAgo))
@@ -250,20 +254,20 @@ export async function GET(request: Request) {
   // de calendário — achado 2026-07-10: "fila reel_ready vazia" alarmava mesmo com a
   // meta do dia (2/2) já cumprida. target=0/ausente nunca satisfaz o guard, então
   // workspaces sem essa config (ex: AI & Tech hoje) mantêm o comportamento de sempre.
-  const [resPublishedTodayAiTech, resPublishedTodaybrand, targetReelsAiTech, targetReelsbrand] = await Promise.all([
+  const [resPublishedTodayAiTech, secondaryPublishedTodayResult, targetReelsAiTech, secondaryTargetReels] = await Promise.all([
     supabase.from('generated_content').select('*', { count: 'exact', head: true })
       .eq('workspace_id', WORKSPACE_ID).eq('target_format', 'reel').eq('status', 'published')
       .gte('published_at', todayISO) as unknown as Promise<{ count: number | null; error: { message: string; code?: string } | null }>,
     supabase.from('generated_content').select('*', { count: 'exact', head: true })
-      .eq('workspace_id', brandMOB_WS).eq('target_format', 'reel').eq('status', 'published')
+      .eq('workspace_id', SECONDARY_WORKSPACE_ID).eq('target_format', 'reel').eq('status', 'published')
       .gte('published_at', todayISO) as unknown as Promise<{ count: number | null; error: { message: string; code?: string } | null }>,
     getNumericVariable(WORKSPACE_ID, 'target_reels_per_day'),
-    getNumericVariable(brandMOB_WS, 'target_reels_per_day'),
+    getNumericVariable(SECONDARY_WORKSPACE_ID, 'target_reels_per_day'),
   ])
   const reelsPublishedTodayAiTech = guardCount(dbGuard, 'generated_content.published_today_aitech', resPublishedTodayAiTech)
-  const reelsPublishedTodaybrand = guardCount(dbGuard, 'generated_content.published_today_brand', resPublishedTodaybrand)
+  const secondaryReelsPublishedToday = guardCount(dbGuard, 'generated_content.published_today_secondary', secondaryPublishedTodayResult)
   const aiTechTargetMet = targetReelsAiTech > 0 && (reelsPublishedTodayAiTech ?? 0) >= targetReelsAiTech
-  const brandTargetMet = targetReelsbrand > 0 && (reelsPublishedTodaybrand ?? 0) >= targetReelsbrand
+  const secondaryTargetMet = secondaryTargetReels > 0 && (secondaryReelsPublishedToday ?? 0) >= secondaryTargetReels
 
   // warnings: texto formatado enviado pro Telegram/email (pode ter contadores/IDs).
   // warningCodes: códigos estáveis (nunca interpolam valores voláteis) — usados como
@@ -293,9 +297,9 @@ export async function GET(request: Request) {
     warnings.push(`🔴 Instagram token EXPIRADO — reels não serão publicados`)
     warningCodes.push('ig_token_expired')
   }
-  if (igTokenExpiredbrand) {
-    warnings.push(`🔴 @brand: Instagram token EXPIRADO — reels não serão publicados`)
-    warningCodes.push('ig_token_expired_brand')
+  if (SECONDARY_WORKSPACE_ID && secondaryIgTokenExpired) {
+    warnings.push(`🔴 @secondary: Instagram token EXPIRADO — reels não serão publicados`)
+    warningCodes.push('ig_token_expired_secondary')
   }
   if (openaiQuotaExceeded) {
     warnings.push(`🔴 OpenAI quota/billing ESGOTADA — geração de capas de reel parada (sem reel_ready). Recarregar conta OpenAI.`)
@@ -329,17 +333,17 @@ export async function GET(request: Request) {
     warnings.push(`🔴 ${igHandle}: fila reel_ready VAZIA — nenhum reel será publicado`)
     warningCodes.push('reel_queue_empty_aitech')
   }
-  if ((reelReadybrand ?? 0) === 0 && brtHour >= 10 && !brandTargetMet) {
-    warnings.push(`🔴 @brand: fila reel_ready VAZIA — nenhum reel será publicado`)
-    warningCodes.push('reel_queue_empty_brand')
+  if (SECONDARY_WORKSPACE_ID && (secondaryReelReady ?? 0) === 0 && brtHour >= 10 && !secondaryTargetMet) {
+    warnings.push(`🔴 @secondary: fila reel_ready VAZIA — nenhum reel será publicado`)
+    warningCodes.push('reel_queue_empty_secondary')
   }
   if ((stuckPublishing?.length ?? 0) > 0) {
     warnings.push(`🔴 ${stuckPublishing!.length} reel(s) presos em 'publishing' há +30min — publicação travada. IDs: ${stuckPublishing!.map(r => r.id.slice(0, 8)).join(', ')}`)
     warningCodes.push('reels_stuck_publishing')
   }
-  if ((failedReelsbrand ?? 0) >= 3) {
-    warnings.push(`🔴 @brand: ${failedReelsbrand} reels falharam nas últimas 6h`)
-    warningCodes.push('reels_failed_brand')
+  if (SECONDARY_WORKSPACE_ID && (secondaryFailedReels ?? 0) >= 3) {
+    warnings.push(`🔴 @secondary: ${secondaryFailedReels} reels falharam nas últimas 6h`)
+    warningCodes.push('reels_failed_secondary')
   }
   // Watchdog vigiando a si mesmo — lição do incidente 42703 (04/07/2026): uma
   // query de monitoramento quebrada deve ALERTAR, nunca cegar checks em silêncio.
@@ -355,19 +359,19 @@ export async function GET(request: Request) {
   // Skipped during pause week ONLY if there's no evidence of a real failure (see above).
   if (brtHour >= 21) {
     try {
-      // reelsPublishedTodayAiTech/brand e todayISO já computados acima (guard de meta batida)
-      const [settings, settingsbrand] = await Promise.all([
+      // reelsPublishedTodayAiTech/secondary e todayISO já computados acima (guard de meta batida)
+      const [settings, secondarySettings] = await Promise.all([
         loadSettings(WORKSPACE_ID),
-        loadSettings(brandMOB_WS),
+        loadSettings(SECONDARY_WORKSPACE_ID),
       ])
 
       if ((reelsPublishedTodayAiTech ?? 0) < settings.min_reels_per_day) {
         warnings.push(`${igHandle}: reels abaixo do mínimo: ${reelsPublishedTodayAiTech ?? 0}/${settings.min_reels_per_day} hoje`)
         warningCodes.push('reels_below_min_aitech')
       }
-      if ((reelsPublishedTodaybrand ?? 0) < settingsbrand.min_reels_per_day) {
-        warnings.push(`@brand: reels abaixo do mínimo: ${reelsPublishedTodaybrand ?? 0}/${settingsbrand.min_reels_per_day} hoje`)
-        warningCodes.push('reels_below_min_brand')
+      if (SECONDARY_WORKSPACE_ID && (secondaryReelsPublishedToday ?? 0) < secondarySettings.min_reels_per_day) {
+        warnings.push(`@secondary: reels abaixo do mínimo: ${secondaryReelsPublishedToday ?? 0}/${secondarySettings.min_reels_per_day} hoje`)
+        warningCodes.push('reels_below_min_secondary')
       }
     } catch (err) {
       Sentry.captureException(err, { tags: { cron: 'heartbeat', step: 'reels_min_check' } })
@@ -388,7 +392,7 @@ export async function GET(request: Request) {
         .single())
 
       // workspace_id filter é obrigatório: existe um agent 'editor-in-chief' por workspace
-      // (AI&Tech e Brand) e o de Brand tem telegram_bot_token=null. Sem o filtro,
+      // (AI&Tech e secondary workspace) e o de secondary workspace tem telegram_bot_token=null. Sem o filtro,
       // .limit(1).single() pode retornar a linha errada (ordem não é garantida sem ORDER BY)
       // e o alerta de Telegram falha silenciosamente (chatId && botToken vira false, sem erro).
       const editorAgent = guardData<{ telegram_bot_token: string | null }>(
@@ -400,10 +404,10 @@ export async function GET(request: Request) {
         .limit(1)
         .single())
 
-      const brandConfig = workspace?.brand_config ?? {}
-      const lastAlertAt = brandConfig.last_heartbeat_alert_at as string | undefined
-      const lastWarnings = brandConfig.last_heartbeat_warnings as string | undefined
-      const lastEmailAt = brandConfig.last_heartbeat_email_at as string | undefined
+      const secondaryConfig = workspace?.brand_config ?? {}
+      const lastAlertAt = secondaryConfig.last_heartbeat_alert_at as string | undefined
+      const lastWarnings = secondaryConfig.last_heartbeat_warnings as string | undefined
+      const lastEmailAt = secondaryConfig.last_heartbeat_email_at as string | undefined
       const currentWarningsKey = warningCodes.join('|')
       const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000).toISOString()
 
@@ -466,7 +470,7 @@ export async function GET(request: Request) {
           .from('workspaces')
           .update({
             brand_config: {
-              ...brandConfig,
+              ...secondaryConfig,
               last_heartbeat_alert_at: now.toISOString(),
               last_heartbeat_warnings: currentWarningsKey,
               ...(criticalWarnings.length > 0 && emailCooldownOk ? { last_heartbeat_email_at: now.toISOString() } : {}),
@@ -492,14 +496,14 @@ export async function GET(request: Request) {
       reelsWithoutCover: noCoverCount,
       reelsWithoutSubs: noSubsCount,
       igTokenExpired,
-      igTokenExpiredbrand,
+      secondaryIgTokenExpired,
       openaiQuotaExceeded,
       twitterCreditsError: (twitterCreditErrors ?? 0) > 0 || (publisherCreditErrors ?? 0) > 0,
       anthropicCreditsError: (anthropicCreditErrors ?? 0) > 0,
       xPublishedLast12h: xPublishedRecently ?? 0,
       reelsProduced24h: recentReelRuns?.length ?? 0,
       reelReadyAiTech: reelReadyAiTech ?? 0,
-      reelReadybrand: reelReadybrand ?? 0,
+      secondaryReelReady: secondaryReelReady ?? 0,
       stuckPublishing: stuckPublishing?.length ?? 0,
       dbQueryFailures: dbGuard.failures.length,
     },

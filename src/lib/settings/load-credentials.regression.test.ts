@@ -59,7 +59,7 @@ describe('REGRESSÃO: cross-workspace credential isolation — Instagram', () =>
     mockWorkspaceCredentials({}) // AI & Tech: platform_credentials = {}
 
     const { getInstagramCredentials } = await loadModule()
-    const creds = await getInstagramCredentials('00000000-0000-0000-0000-000000000000')
+    const creds = await getInstagramCredentials('11111111-1111-4111-8111-111111111111')
 
     // Este era o bug: antes retornava brandMOB_ENV_USER_ID
     expect(creds.igUserId).toBe('')
@@ -78,7 +78,7 @@ describe('REGRESSÃO: cross-workspace credential isolation — Instagram', () =>
     })
 
     const { getInstagramCredentials } = await loadModule()
-    const creds = await getInstagramCredentials('00000000-0000-0000-0000-000000000000')
+    const creds = await getInstagramCredentials('11111111-1111-4111-8111-111111111111')
 
     expect(creds.igUserId).toBe(DB_USER_ID)
     expect(creds.accessToken).toBe(DB_TOKEN)
@@ -132,7 +132,7 @@ describe('REGRESSÃO: prefere token EAA permanente sobre IGAA que expira', () =>
     })
 
     const { getInstagramCredentials } = await loadModule()
-    const creds = await getInstagramCredentials('00000000-0000-0000-0000-000000000000')
+    const creds = await getInstagramCredentials('11111111-1111-4111-8111-111111111111')
 
     // Deve usar o token permanente e o Business Account ID (host graph.facebook.com)
     expect(creds.accessToken).toBe('EAAcjX0Qs8hs_TOKEN_QUE_NAO_EXPIRA')
@@ -152,7 +152,7 @@ describe('REGRESSÃO: prefere token EAA permanente sobre IGAA que expira', () =>
     })
 
     const { getInstagramCredentials } = await loadModule()
-    const creds = await getInstagramCredentials('00000000-0000-0000-0000-000000000000')
+    const creds = await getInstagramCredentials('11111111-1111-4111-8111-111111111111')
 
     expect(creds.accessToken).toBe('EAAc_TOKEN_brandMOB')
     expect(creds.igUserId).toBe('17841471659935614')
@@ -169,7 +169,7 @@ describe('REGRESSÃO: prefere token EAA permanente sobre IGAA que expira', () =>
     })
 
     const { getInstagramCredentials } = await loadModule()
-    const creds = await getInstagramCredentials('00000000-0000-0000-0000-000000000000')
+    const creds = await getInstagramCredentials('11111111-1111-4111-8111-111111111111')
 
     // Par incompleto não deve ser usado — cai no fallback accessToken/userId
     expect(creds.accessToken).toBe('IGAA_TOKEN')
@@ -182,7 +182,7 @@ describe('REGRESSÃO: cross-workspace credential isolation — LinkedIn', () => 
     mockWorkspaceCredentials({})
 
     const { getLinkedInCredentials } = await loadModule()
-    const creds = await getLinkedInCredentials('00000000-0000-0000-0000-000000000000')
+    const creds = await getLinkedInCredentials('11111111-1111-4111-8111-111111111111')
 
     expect(creds.accessToken).toBe('')
     expect(creds.personUrn).toBeUndefined()
@@ -194,7 +194,7 @@ describe('REGRESSÃO: checkCredentialHealth detecta configuração incorreta', (
     mockWorkspaceCredentials({}) // sem instagram no DB
 
     const { checkCredentialHealth } = await loadModule()
-    const issues = await checkCredentialHealth('00000000-0000-0000-0000-000000000000', ['instagram', 'x'])
+    const issues = await checkCredentialHealth('11111111-1111-4111-8111-111111111111', ['instagram', 'x'])
 
     expect(issues).toHaveLength(1)
     expect(issues[0].platform).toBe('instagram')
@@ -208,7 +208,7 @@ describe('REGRESSÃO: checkCredentialHealth detecta configuração incorreta', (
     })
 
     const { checkCredentialHealth } = await loadModule()
-    const issues = await checkCredentialHealth('00000000-0000-0000-0000-000000000000', ['instagram'])
+    const issues = await checkCredentialHealth('11111111-1111-4111-8111-111111111111', ['instagram'])
 
     expect(issues).toHaveLength(0)
   })
@@ -217,7 +217,7 @@ describe('REGRESSÃO: checkCredentialHealth detecta configuração incorreta', (
     mockWorkspaceCredentials({}) // sem x nem youtube no DB
 
     const { checkCredentialHealth } = await loadModule()
-    const issues = await checkCredentialHealth('00000000-0000-0000-0000-000000000000', ['x', 'youtube'])
+    const issues = await checkCredentialHealth('11111111-1111-4111-8111-111111111111', ['x', 'youtube'])
 
     expect(issues).toHaveLength(0)
   })

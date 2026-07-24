@@ -36,6 +36,8 @@ Optional behavior is disabled by default. Enable it per workspace in
 - `feature_evergreen_content`
 - `feature_seasonal_content`
 - `feature_video_reels`
+- `feature_branded_reel_frame`
+- `feature_reel_crossposting`
 - `feature_negative_ev_guardrail`
 - `feature_ev_market_curation`
 

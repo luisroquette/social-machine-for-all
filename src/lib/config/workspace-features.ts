@@ -5,6 +5,8 @@ export const WORKSPACE_FEATURES = [
   'evergreen_content',
   'seasonal_content',
   'video_reels',
+  'branded_reel_frame',
+  'reel_crossposting',
   'negative_ev_guardrail',
   'ev_market_curation',
 ] as const
@@ -17,6 +19,8 @@ const defaults: WorkspaceFeatures = {
   evergreen_content: false,
   seasonal_content: false,
   video_reels: false,
+  branded_reel_frame: false,
+  reel_crossposting: false,
   negative_ev_guardrail: false,
   ev_market_curation: false,
 }

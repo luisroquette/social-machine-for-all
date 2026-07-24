@@ -91,7 +91,7 @@ const mockedLoadSettings = vi.mocked(loadSettings)
 const mockedGetVariable = vi.mocked(getVariable)
 const mockedGenerateSimpleText = vi.mocked(generateSimpleText)
 
-const WORKSPACE_ID = '00000000-0000-0000-0000-000000000000'
+const WORKSPACE_ID = '11111111-1111-4111-8111-111111111111'
 
 function makeCtx(): Parameters<typeof agent.execute>[0] {
   return {

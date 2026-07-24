@@ -8,10 +8,9 @@ import { sendReportEmail } from '@/lib/export/report-email'
 import { hoursSince, isInstagramStale } from '@/lib/monitoring/instagram-freshness'
 
 const ALERT_EMAIL = 'lfrprojects.ai@gmail.com'
-const brandMOB_WS = '00000000-0000-0000-0000-000000000000'
 const STALE_HOURS = 24
 
-const WORKSPACES = [WORKSPACE_ID, brandMOB_WS]
+const WORKSPACES = [WORKSPACE_ID, process.env.SECONDARY_WORKSPACE_ID?.trim()].filter((id): id is string => Boolean(id))
 
 /**
  * Digest de status do Instagram — roda em horários fixos, 2x/dia (ver vercel.json).
@@ -25,6 +24,9 @@ const WORKSPACES = [WORKSPACE_ID, brandMOB_WS]
 export async function GET(request: Request) {
   if (!isCronRequest(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  if (!WORKSPACE_ID) {
+    return NextResponse.json({ error: 'WORKSPACE_ID is not configured' }, { status: 503 })
   }
 
   const supabase = getAdminClient()

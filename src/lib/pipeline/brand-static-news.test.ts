@@ -24,7 +24,7 @@ describe('brand static news', () => {
   it('materializa candidato com media curada quando elegivel', () => {
     const item = materializeStaticNewsCandidate({
       id: 'curated-1',
-      workspace_id: '00000000-0000-0000-0000-000000000000',
+      workspace_id: '11111111-1111-4111-8111-111111111111',
       source_platform: 'x',
       source_url: 'https://x.com/post/1',
       source_author: 'evnews',
@@ -46,7 +46,7 @@ describe('brand static news', () => {
   it('materializa fallback generated_image quando nao encontra imagem', () => {
     const item = materializeStaticNewsCandidate({
       id: 'curated-2',
-      workspace_id: '00000000-0000-0000-0000-000000000000',
+      workspace_id: '11111111-1111-4111-8111-111111111111',
       source_platform: 'rss',
       source_url: 'https://site.com/noticia',
       source_author: 'portal',
@@ -63,7 +63,7 @@ describe('brand static news', () => {
   it('descarta conteudo elegivel para reels mas fora do escopo de lancamento BR', () => {
     const item = materializeStaticNewsCandidate({
       id: 'curated-3',
-      workspace_id: '00000000-0000-0000-0000-000000000000',
+      workspace_id: '11111111-1111-4111-8111-111111111111',
       source_platform: 'x',
       source_url: 'https://x.com/post/3',
       source_author: 'infra',
@@ -82,7 +82,7 @@ describe('brand static news', () => {
     const format = chooseStaticNewsDraftFormat({
       id: 'queue-1',
       curated_content_id: 'curated-1',
-      workspace_id: '00000000-0000-0000-0000-000000000000',
+      workspace_id: '11111111-1111-4111-8111-111111111111',
       source_platform: 'x',
       source_url: 'https://x.com/post/1',
       source_author: 'evnews',
@@ -102,7 +102,7 @@ describe('brand static news', () => {
     const prompt = buildStaticNewsPrompt({
       id: 'queue-2',
       curated_content_id: 'curated-2',
-      workspace_id: '00000000-0000-0000-0000-000000000000',
+      workspace_id: '11111111-1111-4111-8111-111111111111',
       source_platform: 'rss',
       source_url: 'https://site.com/noticia',
       source_author: 'portal',
@@ -136,7 +136,7 @@ describe('brand static news', () => {
     const prompt = buildStaticNewsPrompt({
       id: 'queue-3',
       curated_content_id: 'curated-3',
-      workspace_id: '00000000-0000-0000-0000-000000000000',
+      workspace_id: '11111111-1111-4111-8111-111111111111',
       source_platform: 'x',
       source_url: 'https://x.com/post/3',
       source_author: 'evnews',

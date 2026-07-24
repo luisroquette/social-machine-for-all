@@ -10,6 +10,7 @@ import { WORKSPACE_ID, INSTAGRAM_API_BASE } from '@/lib/config/constants'
 import { AI_SENTINEL } from '@/lib/ai/generate-with-fallback'
 import { applyMicroVariation } from '@/lib/platforms/instagram/client'
 import { publishFinishedContainer } from '@/lib/platforms/instagram/publish-container'
+import { isWorkspaceFeatureEnabled, loadWorkspaceFeatures } from '@/lib/config/workspace-features'
 
 /**
  * PHASE 2: Render + Publish.
@@ -25,8 +26,6 @@ import { publishFinishedContainer } from '@/lib/platforms/instagram/publish-cont
  * Generate editorial cover via Satori (/api/og/reel) and upload to Supabase storage.
  * Returns the public URL of the cover PNG, or null on failure.
  */
-const BRAND_WORKSPACE_ID = '00000000-0000-0000-0000-000000000000'
-
 async function generateEditorialCover(params: {
   itemId: string
   hookTitle: string
@@ -46,8 +45,8 @@ async function generateEditorialCover(params: {
     let ogPath: string
     let qs: URLSearchParams
 
-    if (params.workspaceId === BRAND_WORKSPACE_ID) {
-      // Brand: use branded cover with violet/EV theme — full hook phrase for max info
+    if (await isWorkspaceFeatureEnabled(params.workspaceId, 'branded_reel_frame')) {
+      // A workspace may opt into its dedicated Satori cover template.
       qs = new URLSearchParams({
         hookTitle: params.hookTitle,
         highlightName: params.subtitle || params.hookTitle,
@@ -95,6 +94,10 @@ export async function GET(request: Request) {
   // Allow workspace override via ?workspaceId= query param (for Brand cron entry)
   const url = new URL(request.url)
   const workspaceId = url.searchParams.get('workspaceId') || WORKSPACE_ID
+  if (!workspaceId) {
+    return NextResponse.json({ error: 'WORKSPACE_ID is not configured' }, { status: 503 })
+  }
+  const features = await loadWorkspaceFeatures(workspaceId)
 
   const supabase = getAdminClient()
   const REEL_RENDERER_URL = process.env.REEL_RENDERER_URL || ''
@@ -243,7 +246,7 @@ export async function GET(request: Request) {
   }
 
   const renderVideo = async (): Promise<string | null> => {
-    if (workspaceId !== BRAND_WORKSPACE_ID) {
+    if (!features.branded_reel_frame) {
       // AI & Tech (@thedoomguy_ai): branded frame — landscape + portrait sized correctly,
       // header with logo/handle/category/title, karaoke subtitles in video slot.
       // Always render regardless of whether subtitles exist.
@@ -310,7 +313,7 @@ export async function GET(request: Request) {
   } else if (videoResult.status === 'rejected') {
     const capErr = videoResult.reason?.message || String(videoResult.reason)
     console.error('[reels-publish] Video render failed:', capErr)
-    if (workspaceId !== BRAND_WORKSPACE_ID) {
+    if (!features.branded_reel_frame) {
       // AI & Tech: doomguy-frame always renders — if it fails the source format is unknown.
       // Never send raw video to Instagram; it could be landscape → infinite IN_PROGRESS polling.
       await supabase.from('generated_content')
@@ -552,7 +555,7 @@ export async function GET(request: Request) {
 
   // ── Cross-post to Twitter — AI & Tech only (@thedoomguy_ai has X; Brand does not) ──
   let tweetId: string | null = null
-  if (workspaceId !== BRAND_WORKSPACE_ID) {
+  if (features.reel_crossposting) {
     try {
       const { XClient } = await import('@/lib/platforms/x/client')
       const xClient = XClient.fromEnv()
@@ -565,7 +568,7 @@ export async function GET(request: Request) {
 
   // ── Cross-post to YouTube Shorts — AI & Tech only (Brand has no YouTube channel) ──
   let youtubeId: string | null = null
-  if (workspaceId !== BRAND_WORKSPACE_ID) {
+  if (features.reel_crossposting) {
     try {
       const { YouTubeClient } = await import('@/lib/platforms/youtube/client')
       const ytClient = YouTubeClient.fromEnv()

@@ -83,10 +83,10 @@ vi.mock('@/lib/supabase/admin', () => ({
 
 import { agent } from './index'
 
-const BRAND_WORKSPACE_ID = '00000000-0000-0000-0000-000000000000'
+const FEATURED_WORKSPACE_ID = '11111111-1111-4111-8111-111111111111'
 
 const makeCtx = (overrides = {}) => ({
-  workspaceId: BRAND_WORKSPACE_ID,
+  workspaceId: FEATURED_WORKSPACE_ID,
   agentId: 'agent-writer-test',
   brandContext: '',
   feedbackContext: '',
@@ -106,7 +106,7 @@ function setCuratedItem(item: Record<string, unknown>) {
 
 const BASE_ITEM = {
   id: 'curated-1',
-  workspace_id: BRAND_WORKSPACE_ID,
+  workspace_id: FEATURED_WORKSPACE_ID,
   topic_id: null,
   source_url: 'https://x.com/foo/status/1',
   source_author: 'foo',
@@ -152,7 +152,7 @@ describe('REGRESSÃO: brand format rotation — feed_post/carousel só de source
     expect(mockGenerateSimpleText).toHaveBeenCalled()
     expect(mockInsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        workspace_id: BRAND_WORKSPACE_ID,
+        workspace_id: FEATURED_WORKSPACE_ID,
         target_platform: 'instagram',
         target_format: 'feed_post',
       }),
@@ -174,7 +174,7 @@ describe('REGRESSÃO: brand format rotation — feed_post/carousel só de source
     expect(userMessage).toContain('CATEGORIA DETECTADA: seasonal')
     expect(mockInsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        workspace_id: BRAND_WORKSPACE_ID,
+        workspace_id: FEATURED_WORKSPACE_ID,
         target_platform: 'instagram',
         target_format: 'feed_post',
       }),

@@ -24,13 +24,13 @@ describe('evergreen_pillar_cursor setting', () => {
 
   it('getVariable retorna "0" quando não configurado no banco', async () => {
     const { getVariable } = await import('./load-settings')
-    const value = await getVariable('00000000-0000-0000-0000-000000000000', 'evergreen_pillar_cursor')
+    const value = await getVariable('11111111-1111-4111-8111-111111111111', 'evergreen_pillar_cursor')
     expect(value).toBe('0')
   })
 
   it('owned_x_handles já nasce com aliases same-owner protegidos', async () => {
     const { getVariable } = await import('./load-settings')
-    const value = await getVariable('00000000-0000-0000-0000-000000000000', 'owned_x_handles')
+    const value = await getVariable('11111111-1111-4111-8111-111111111111', 'owned_x_handles')
     expect(value).toBe('luisroquette,example_handle')
   })
 })
@@ -45,7 +45,7 @@ describe('autoreply_muted_media_ids setting (media-mute durável)', () => {
 
   it('getVariable retorna "" quando a chave está ausente', async () => {
     const { getVariable } = await import('./load-settings')
-    const v = await getVariable('00000000-0000-0000-0000-000000000000', 'autoreply_muted_media_ids')
+    const v = await getVariable('11111111-1111-4111-8111-111111111111', 'autoreply_muted_media_ids')
     expect(v).toBe('')
   })
 })
@@ -64,7 +64,7 @@ describe('comment_daily_reply_cap setting (anti-ban configurável por workspace)
   // nunca virar 0/desabilitado silenciosamente.
   it('getNumericVariable herda 80 quando a chave está ausente no banco', async () => {
     const { getNumericVariable } = await import('./load-settings')
-    const cap = await getNumericVariable('00000000-0000-0000-0000-000000000000', 'comment_daily_reply_cap')
+    const cap = await getNumericVariable('11111111-1111-4111-8111-111111111111', 'comment_daily_reply_cap')
     expect(cap).toBe(80)
   })
 })

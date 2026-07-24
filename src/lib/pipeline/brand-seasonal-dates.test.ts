@@ -71,7 +71,7 @@ vi.mock('@/lib/supabase/admin', () => ({
 
 import { computeEasterSunday, resolveOccurrenceDate, runSeasonalBrand } from './brand-seasonal-dates'
 
-const WORKSPACE_ID = '00000000-0000-0000-0000-000000000000'
+const WORKSPACE_ID = '11111111-1111-4111-8111-111111111111'
 
 function makeRow(overrides: Partial<Record<string, unknown>> = {}) {
   return {

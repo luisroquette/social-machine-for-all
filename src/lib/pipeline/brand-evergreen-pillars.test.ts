@@ -52,7 +52,7 @@ vi.mock('@/lib/supabase/admin', () => ({
   getAdminClient: () => ({ from: mockFrom }),
 }))
 
-const WORKSPACE_ID = '00000000-0000-0000-0000-000000000000'
+const WORKSPACE_ID = '11111111-1111-4111-8111-111111111111'
 
 beforeEach(() => {
   vi.resetModules()

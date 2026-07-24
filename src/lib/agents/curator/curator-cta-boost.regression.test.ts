@@ -53,7 +53,7 @@ describe('REGRESSÃO: Writer CTA roll — distribuição ~25%', () => {
   }
 
   it('é determinístico — mesmo id sempre dá mesmo resultado', () => {
-    const id = '00000000-0000-0000-0000-000000000000'
+    const id = '11111111-1111-4111-8111-111111111111'
     expect(ctaRoll(id)).toBe(ctaRoll(id))
   })
 
