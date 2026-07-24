@@ -8,7 +8,7 @@ import { generateTextWithFallback } from '@/lib/ai/generate-with-fallback'
 import { parseAIJson } from '@/lib/ai/parse-json'
 import { buildStaticNewsPrompt, chooseStaticNewsDraftFormat, type StaticNewsDraft, type StaticNewsQueueItem } from '@/lib/pipeline/brand-static-news'
 
-const WORKSPACE_ID = '00000000-0000-0000-0000-000000000000'
+const WORKSPACE_ID = process.env.WORKSPACE_ID?.trim() ?? ''
 
 type CuratedStaticSlide = {
   type: 'cover' | 'content' | 'cta'
@@ -106,6 +106,9 @@ function normalizeDraft(item: StaticNewsQueueItem, parsed: Record<string, unknow
 export async function GET(request: Request) {
   if (!isCronRequest(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  if (!WORKSPACE_ID) {
+    return NextResponse.json({ error: 'WORKSPACE_ID is not configured' }, { status: 503 })
   }
 
   const [candidateLimit] = await Promise.all([

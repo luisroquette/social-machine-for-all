@@ -46,6 +46,15 @@ vi.mock('@/lib/settings/platform-config', () => ({
   ]),
 }))
 
+vi.mock('@/lib/settings/load-settings', () => ({
+  getVariable: vi.fn().mockResolvedValue(null),
+  getNumericVariable: vi.fn().mockResolvedValue(null),
+  loadSettings: vi.fn().mockResolvedValue({
+    feature_instagram_image_generation: 'true',
+    feature_evergreen_content: 'true',
+  }),
+}))
+
 vi.mock('@/lib/pipeline/dedup', () => ({
   hasDraftForCuratedItem: vi.fn().mockResolvedValue(false),
 }))

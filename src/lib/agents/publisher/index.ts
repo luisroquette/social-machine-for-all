@@ -15,6 +15,7 @@ import { generateStoredImage } from '@/lib/ai/openai-image'
 import { parseAIJson } from '@/lib/ai/parse-json'
 import { generateTextWithFallback } from '@/lib/ai/generate-with-fallback'
 import { trimVideoForXIfNeeded } from '@/lib/video/trim-video-for-x'
+import { isWorkspaceFeatureEnabled } from '@/lib/config/workspace-features'
 
 // Fallback defaults; overridden at runtime by settings system
 const DEFAULT_MAX_POSTS_PER_RUN = 5
@@ -329,10 +330,9 @@ async function publishInstagramReel(
     // ── TYPE 1: Curated video (from X/Twitter) — render with Remotion ──
     if (reelData.type === 'curated_video' && reelData.original_video_url) {
       // Run Remotion render + cover generation in parallel — saves ~160s vs sequential
-      const BRAND_WORKSPACE = '00000000-0000-0000-0000-000000000000'
-      const isBrand = workspaceId === BRAND_WORKSPACE
+      const useWorkspaceReelCover = await isWorkspaceFeatureEnabled(workspaceId, 'video_reels')
 
-      const coverPromise: Promise<string | null> = isBrand && reelData.image_prompt
+      const coverPromise: Promise<string | null> = useWorkspaceReelCover && reelData.image_prompt
         ? import('@/lib/ai/generate-brand-reel-cover').then(({ generatebrandReelCover }) =>
             generatebrandReelCover({
               hookTitle:     reelData.hookTitle    || '',

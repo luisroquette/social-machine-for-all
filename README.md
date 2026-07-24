@@ -27,6 +27,26 @@ published content, platform policies and applicable law.
 - Cron jobs must be enabled deliberately in your deployment configuration.
 - Run `npm run audit:public-release` before publishing a fork.
 
+## Workspace capabilities
+
+Optional behavior is disabled by default. Enable it per workspace in
+`workspace_settings` only after its integrations and editorial rules are ready:
+
+- `feature_instagram_image_generation`
+- `feature_evergreen_content`
+- `feature_seasonal_content`
+- `feature_video_reels`
+- `feature_negative_ev_guardrail`
+- `feature_ev_market_curation`
+
+Use the value `true` (or `1`) to enable a capability. The EV-specific flags
+preserve an optional editorial workflow; most installations should leave them
+off and place their own brand rules in the workspace or agent system prompt.
+
+Some legacy, optional cron routes use `WORKSPACE_ID`. It is intentionally blank
+in `.env.example`: set it only to the ID of a workspace in your own Supabase
+project, then explicitly schedule the route in your deployment platform.
+
 ## Optional modules and costs
 
 AI, video rendering, email, analytics and social platforms are optional. They

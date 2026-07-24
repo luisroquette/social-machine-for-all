@@ -14,8 +14,6 @@
 // Regression tests: brand-brand-safety.regression.test.ts — NÃO remover termos
 // sem rodar os testes.
 
-export const BRAND_WORKSPACE_ID = '00000000-0000-0000-0000-000000000000'
-
 export const BRAND_NEGATIVE_EV_BLOCKLIST = [
   // ── Fogo / explosão (PT) ────────────────────────────────────────────────
   'em chamas', 'pega fogo', 'pegou fogo', 'pegam fogo', 'pegaram fogo', 'pegando fogo',

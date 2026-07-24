@@ -8,11 +8,14 @@ import { materializeStaticNewsCandidate, type StaticNewsCandidate } from '@/lib/
 import { refineStaticNewsCandidateMedia } from '@/lib/pipeline/brand-static-visual'
 import type { TablesInsert } from '@/lib/supabase/database.types'
 
-const WORKSPACE_ID = '00000000-0000-0000-0000-000000000000'
+const WORKSPACE_ID = process.env.WORKSPACE_ID?.trim() ?? ''
 
 export async function GET(request: Request) {
   if (!isCronRequest(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  if (!WORKSPACE_ID) {
+    return NextResponse.json({ error: 'WORKSPACE_ID is not configured' }, { status: 503 })
   }
 
   const [minRelevanceScore, lookbackHours, candidateLimit] = await Promise.all([

@@ -6,6 +6,7 @@ import { getAdminClient } from '@/lib/supabase/admin'
 import { hasDraftForCuratedItem } from '@/lib/pipeline/dedup'
 import { loadPlatformConfigs, type PlatformConfig } from '@/lib/settings/platform-config'
 import { getVariable, getNumericVariable } from '@/lib/settings/load-settings'
+import { loadWorkspaceFeatures, type WorkspaceFeatures } from '@/lib/config/workspace-features'
 import { buildEngagementInsights } from '@/lib/eval/engagement-insights'
 import type { Json } from '@/lib/supabase/database.types'
 
@@ -83,6 +84,7 @@ class WriterAgent extends BaseAgent {
     const writerModel = await getVariable(ctx.workspaceId, 'writer_model') || this.config.defaultModel
     const maxExecutionMs = await getNumericVariable(ctx.workspaceId, 'writer_max_execution_ms') || 90_000
     this._resolvedMaxActionsPerHour = await getNumericVariable(ctx.workspaceId, 'writer_max_actions_per_hour') || 30
+    const features = await loadWorkspaceFeatures(ctx.workspaceId)
 
     // ── Process pending SEO briefs from SEO Strategist ───────────────────────
     // SEO Strategist deposits briefs with status='brief_pending', target_format='seo_brief'.
@@ -215,13 +217,12 @@ class WriterAgent extends BaseAgent {
       }
     }
 
-    // ── brand MOB: Also include archived reel-eligible videos from last 7 days ──
+    // Also include archived reel-eligible videos from the last 7 days when enabled.
     // Videos curated in the last 7 days that were written as feed_post/carousel (before the
     // reel-always-wins fix) now have stored_video_url in source_metrics. Pick them up as
     // reel candidates even though their status is already 'written'.
-    const BRAND_WORKSPACE_ID = '00000000-0000-0000-0000-000000000000'
     const itemsToProcess: CuratedItem[] = [...((curatedItems ?? []) as unknown as CuratedItem[])]
-    if (ctx.workspaceId === BRAND_WORKSPACE_ID) {
+    if (features.video_reels) {
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
       const { data: archivedVideoItems } = await supabase
         .from('curated_content')
@@ -310,12 +311,10 @@ class WriterAgent extends BaseAgent {
           const isReelEligible = item.source_metrics?.reel_eligible === true
           const isInstagram = platformConfig.platform === 'instagram'
 
-          // Brand workspace generates its own images (feed/carousel/reel cover via Gemini Imagen 4.0).
-          // All other workspaces skip Instagram — no image source available.
-          const BRAND_WORKSPACE = '00000000-0000-0000-0000-000000000000'
-          const isBrand = ctx.workspaceId === BRAND_WORKSPACE
+          // Image generation is opt-in per workspace. Without it, skip Instagram safely.
+          const supportsInstagramImages = features.instagram_image_generation
 
-          if (isInstagram && !isBrand) {
+          if (isInstagram && !supportsInstagramImages) {
             continue
           }
 
@@ -327,7 +326,7 @@ class WriterAgent extends BaseAgent {
           // Isso corrigiu a causa raiz da rejeição de ~91% dos carrosséis: ver
           // docs/superpowers/specs/2026-07-05-brand-evergreen-multiformat-design.md.
           let brandTargetFormat: 'feed_post' | 'carousel' | 'reel' | null = null
-          if (isBrand && isInstagram) {
+          if (supportsInstagramImages && features.evergreen_content && isInstagram) {
             // Prefer permanent stored_video_url (Supabase) over potentially-expired Twitter URL
             const videoUrl_ = item.source_metrics?.stored_video_url ?? item.source_metrics?.video_url
             if (isArchivedVideoItem || (isReelEligible && videoUrl_)) {
@@ -352,7 +351,7 @@ class WriterAgent extends BaseAgent {
           }
 
           // ── STANDARD TEXT GENERATION (posts, slideshows, etc.) ──
-          const basePrompt = ctx.dbConfig?.system_prompt ?? this.buildPlatformPrompt(platformConfig, ctx)
+          const basePrompt = ctx.dbConfig?.system_prompt ?? this.buildPlatformPrompt(platformConfig, ctx, features)
           const examples = await this.getTopPerformingExamples(ctx.workspaceId, platformConfig.platform)
           const systemPrompt = basePrompt + examples
 
@@ -395,17 +394,17 @@ class WriterAgent extends BaseAgent {
             '',
             (!isXPlatform && item.source_url && !/twitter\.com|x\.com/i.test(item.source_url)) ? `Link: ${item.source_url}` : '',
             '',
-            // For Brand Instagram: force the rotation-determined format
-            (isInstagram && isBrand && brandTargetFormat === 'reel' && videoUrl)
+            // For Instagram workspaces with enabled image generation, force the configured format.
+            (isInstagram && supportsInstagramImages && brandTargetFormat === 'reel' && videoUrl)
               ? `VIDEO_URL (inclua exatamente este valor no campo original_video_url do JSON): ${videoUrl}`
               : '',
-            (isInstagram && isBrand && brandTargetFormat)
+            (isInstagram && supportsInstagramImages && brandTargetFormat)
               ? `FORMATO OBRIGATÓRIO: Gere exatamente o formato "${brandTargetFormat}" (ver system prompt para estrutura JSON). Nenhum outro formato é aceito nesta rodada.`
               : (isInstagram && isReelEligible && videoUrl)
                 ? `FORMATO OBRIGATÓRIO: Use o formato reel/curated_video (ver system prompt).`
                 : '',
-            // brandmob: inject EV B2B category so the writer calibrates copy angle
-            (isBrand && item.score_breakdown?.category)
+            // EV taxonomy is optional and only active for workspaces that opt in.
+            (features.ev_market_curation && item.score_breakdown?.category)
               ? `CATEGORIA DETECTADA: ${item.score_breakdown.category}\n${evCategoryFocus(String(item.score_breakdown.category))}`
               : '',
             `CHECKLIST ANTES DE RESPONDER (violar qualquer item = rejeicao automatica):`,
@@ -417,7 +416,7 @@ class WriterAgent extends BaseAgent {
             '',
             // CTA gatilho: ~1 em 4 posts com recurso distribuível terminam com o convite de follow+DM.
             // Determinístico por item ID para evitar que o mesmo post gere CTAs em runs repetidos.
-            (!isBrand && isXPlatform && item.score_breakdown?.cta_content === true && ctaRoll)
+            (isXPlatform && item.score_breakdown?.cta_content === true && ctaRoll)
               ? `CTA OBRIGATÓRIO NESTE POST: O conteúdo fonte menciona um recurso distribuível (repo/guia/lista/template). TERMINE o post com exatamente uma frase no estilo: "Comente [PALAVRA] aqui que te mando o link via DM." — escolha 1 palavra curta MAIÚSCULA relacionada ao tema (ex: REPO, LISTA, GUIA, KIT, PDF). A frase deve ser o encerramento do post, sem link real. Para thread: coloque no último tweet.`
               : '',
             formatInstruction,
@@ -664,7 +663,7 @@ class WriterAgent extends BaseAgent {
     ].filter(Boolean).join('\n')
   }
 
-  private buildPlatformPrompt(config: PlatformConfig, ctx: RunContext): string {
+  private buildPlatformPrompt(config: PlatformConfig, ctx: RunContext, features: WorkspaceFeatures): string {
     const maxLength = config.maxLength
 
     // ── BRAND IDENTITY & CONTENT SCOPE ──
@@ -903,8 +902,9 @@ class WriterAgent extends BaseAgent {
         '- image_prompts: descricoes em ingles para AI image generation (estilo dark, futurista, minimal)',
         '- O ultimo slide deve conectar tematicamente ao primeiro (loop effect)',
       )
-      // ── brand MOB — Carousel e Feed Post (workspace-specific) ────────────────
-      if (ctx.workspaceId === '00000000-0000-0000-0000-000000000000') {
+      // Optional EV B2B format guide. For other companies, use the workspace
+      // system prompt to provide an equivalent company-specific editorial guide.
+      if (features.ev_market_curation) {
         lines.push(
           '',
           '## IDIOMA OBRIGATÓRIO: Português Brasileiro (PT-BR)',

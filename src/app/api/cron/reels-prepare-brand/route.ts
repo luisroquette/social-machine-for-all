@@ -21,7 +21,7 @@ import { hasNegativeEvFraming } from '@/lib/brand/brand-brand-safety'
 
 export { EV_KEYWORDS, isBrazilRelevantbrandSource } // re-export for regression tests
 
-const WORKSPACE_ID = '00000000-0000-0000-0000-000000000000' // Brand
+const WORKSPACE_ID = process.env.WORKSPACE_ID?.trim() ?? ''
 const REEL_RENDERER_URL = process.env.REEL_RENDERER_URL || ''
 const REEL_RENDERER_API_KEY = process.env.REEL_RENDERER_API_KEY || ''
 
@@ -54,6 +54,9 @@ const YT_TIMEOUT_SENTINEL = 'yt_timeout'
 export async function GET(request: Request) {
   if (!isCronRequest(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  if (!WORKSPACE_ID) {
+    return NextResponse.json({ error: 'WORKSPACE_ID is not configured' }, { status: 503 })
   }
 
   // A3 (pause week) foi REMOVIDO em 04/07/2026 — ver comentário em

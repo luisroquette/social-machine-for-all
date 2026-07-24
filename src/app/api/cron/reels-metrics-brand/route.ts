@@ -10,11 +10,14 @@ import { fetchFollowerCount } from '@/lib/platforms/instagram/follower-count'
 import { IG_INSIGHTS_METRICS, buildEngagementUpdate, parsePermanentAuthError } from '@/lib/eval/engagement-metrics'
 import type { TablesUpdate } from '@/lib/supabase/database.types'
 
-const WORKSPACE_ID = '00000000-0000-0000-0000-000000000000' // Brand
+const WORKSPACE_ID = process.env.WORKSPACE_ID?.trim() ?? ''
 
 export async function GET(request: Request) {
   if (!isCronRequest(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  if (!WORKSPACE_ID) {
+    return NextResponse.json({ error: 'WORKSPACE_ID is not configured' }, { status: 503 })
   }
 
   const backfill = new URL(request.url).searchParams.get('backfill') === '1'

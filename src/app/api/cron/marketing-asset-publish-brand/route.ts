@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server'
 import { isCronRequest } from '@/lib/api/auth'
 import { publishNextMarketingAsset } from '@/lib/pipeline/brand-marketing-assets'
 
-const BRAND_WORKSPACE_ID = '00000000-0000-0000-0000-000000000000'
+const WORKSPACE_ID = process.env.WORKSPACE_ID?.trim() ?? ''
 
 /**
  * Roda ~3x/semana. Publica o próximo asset real (pasta Marketing) ainda não
@@ -18,8 +18,11 @@ export async function GET(request: Request) {
   if (!isCronRequest(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  if (!WORKSPACE_ID) {
+    return NextResponse.json({ error: 'WORKSPACE_ID is not configured' }, { status: 503 })
+  }
 
-  const result = await publishNextMarketingAsset(BRAND_WORKSPACE_ID)
+  const result = await publishNextMarketingAsset(WORKSPACE_ID)
 
   if (!result) {
     return NextResponse.json({ success: false, reason: 'no_unused_assets' })

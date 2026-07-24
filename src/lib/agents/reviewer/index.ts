@@ -6,7 +6,8 @@ import { getAdminClient } from '@/lib/supabase/admin'
 import { getPlatformConfig, type PlatformConfig } from '@/lib/settings/platform-config'
 import { buildEngagementInsights } from '@/lib/eval/engagement-insights'
 import { getVariable, getNumericVariable } from '@/lib/settings/load-settings'
-import { BRAND_WORKSPACE_ID, hasNegativeEvFraming } from '@/lib/brand/brand-brand-safety'
+import { hasNegativeEvFraming } from '@/lib/brand/brand-brand-safety'
+import { loadWorkspaceFeatures } from '@/lib/config/workspace-features'
 import { getPublishableContentText, runQualityGate } from '@/lib/eval/quality-gate'
 import type { Json, TablesUpdate } from '@/lib/supabase/database.types'
 
@@ -68,6 +69,7 @@ class ReviewerAgent extends BaseAgent {
     let tokensUsed = 0
     const errors: string[] = []
     const reviews: ReviewResult[] = []
+    const features = await loadWorkspaceFeatures(ctx.workspaceId)
 
     // Load draft content ready for review
     const { data: drafts, error: fetchError } = await supabase
@@ -173,7 +175,7 @@ class ReviewerAgent extends BaseAgent {
         // é aprovado — a brand vende eletromobilidade; manchete de medo afasta o
         // comprador. Ver src/lib/brand/brand-brand-safety.ts (Reel "11 EVS EM
         // CHAMAS", 07/07/2026).
-        if (ctx.workspaceId === BRAND_WORKSPACE_ID && hasNegativeEvFraming(draft.content)) {
+        if (features.negative_ev_guardrail && hasNegativeEvFraming(draft.content)) {
           const issue = 'Brand safety Brand: conteudo associa EV a perigo (incendio/acidente/recall)'
           const { error: updateError } = await supabase
             .from('generated_content')
