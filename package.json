@@ -18,7 +18,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "session-audit": "sh scripts/session-audit.sh",
-    "audit:public-release": "sh scripts/audit-public-release.sh"
+    "audit:public-release": "sh scripts/audit-public-release.sh",
+    "audit:runtime": "npm audit --omit=dev"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.69",

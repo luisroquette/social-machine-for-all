@@ -4,6 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/luisroquette/social-machine-for-all/actions/workflows/ci.yml"><img src="https://github.com/luisroquette/social-machine-for-all/actions/workflows/ci.yml/badge.svg" alt="CI status" /></a>
+  <a href="https://github.com/luisroquette/social-machine-for-all/releases/latest"><img src="https://img.shields.io/github/v/release/luisroquette/social-machine-for-all?style=flat-square&color=52E0B3" alt="Latest release" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-52E0B3?style=flat-square" alt="MIT License" /></a>
   <img src="https://img.shields.io/badge/node-%3E%3D20.9-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js 20.9 or newer" />
   <img src="https://img.shields.io/badge/self--hosted-your%20data-70B7FF?style=flat-square" alt="Self-hosted" />
@@ -311,6 +312,7 @@ for your market, or remove it if your company does not need that vertical.
 
 ```bash
 npm run audit:public-release
+npm run audit:runtime
 npm test
 npm run build
 ```
