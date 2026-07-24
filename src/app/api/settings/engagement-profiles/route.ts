@@ -1,19 +1,20 @@
 import { NextResponse } from 'next/server'
-import { getActiveWorkspaceId } from '@/lib/config/workspace'
 import { getAdminClient } from '@/lib/supabase/admin'
 import type { TablesUpdate } from '@/lib/supabase/database.types'
 import {
   normalizeHandle,
   validateExternalHandle,
 } from '@/lib/engagement-profiles/same-owner'
+import { getAuthorizedWorkspace } from '@/lib/api/auth'
 
-export async function GET() {
-  const workspaceId = await getActiveWorkspaceId()
+export async function GET(request: Request) {
+  const access = await getAuthorizedWorkspace(request)
+  if (access instanceof NextResponse) return access
   const supabase = getAdminClient()
   const { data, error } = await supabase
     .from('engagement_profiles')
     .select('*')
-    .eq('workspace_id', workspaceId)
+    .eq('workspace_id', access.workspaceId)
     .order('created_at', { ascending: false })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
@@ -21,6 +22,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const access = await getAuthorizedWorkspace(request)
+  if (access instanceof NextResponse) return access
   const body = await request.json()
   const handle = normalizeHandle(body?.handle)
   const platform = typeof body?.platform === 'string' ? body.platform.trim().toLowerCase() : 'x'
@@ -34,8 +37,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'max_daily_interactions must be between 1 and 20' }, { status: 400 })
   }
 
-  const workspaceId = await getActiveWorkspaceId()
-  const validationError = await validateExternalHandle(workspaceId, handle, platform)
+  const validationError = await validateExternalHandle(access.workspaceId, handle, platform)
   if (validationError) {
     return NextResponse.json({ error: validationError }, { status: 400 })
   }
@@ -44,7 +46,7 @@ export async function POST(request: Request) {
   const { data, error } = await supabase
     .from('engagement_profiles')
     .insert({
-      workspace_id: workspaceId,
+      workspace_id: access.workspaceId,
       handle,
       platform,
       active: true,
@@ -59,6 +61,8 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
+  const access = await getAuthorizedWorkspace(request)
+  if (access instanceof NextResponse) return access
   const body = await request.json()
   const id = typeof body?.id === 'string' ? body.id : ''
   const active = typeof body?.active === 'boolean' ? body.active : null
@@ -77,32 +81,32 @@ export async function PUT(request: Request) {
     patch.config = { max_daily_interactions: parsed }
   }
 
-  const workspaceId = await getActiveWorkspaceId()
   const supabase = getAdminClient()
   const { error } = await supabase
     .from('engagement_profiles')
     .update(patch as TablesUpdate<'engagement_profiles'>)
     .eq('id', id)
-    .eq('workspace_id', workspaceId)
+    .eq('workspace_id', access.workspaceId)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true })
 }
 
 export async function DELETE(request: Request) {
+  const access = await getAuthorizedWorkspace(request)
+  if (access instanceof NextResponse) return access
   const { searchParams } = new URL(request.url)
   const id = searchParams.get('id')
   if (!id) {
     return NextResponse.json({ error: 'id query param required' }, { status: 400 })
   }
 
-  const workspaceId = await getActiveWorkspaceId()
   const supabase = getAdminClient()
   const { error } = await supabase
     .from('engagement_profiles')
     .delete()
     .eq('id', id)
-    .eq('workspace_id', workspaceId)
+    .eq('workspace_id', access.workspaceId)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true })

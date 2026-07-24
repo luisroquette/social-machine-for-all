@@ -4,6 +4,10 @@ vi.mock('@/lib/config/workspace', () => ({
   getActiveWorkspaceId: vi.fn().mockResolvedValue('workspace-1'),
 }))
 
+vi.mock('@/lib/api/auth', () => ({
+  getAuthorizedWorkspace: vi.fn().mockResolvedValue({ workspaceId: 'workspace-1', userId: 'user-1' }),
+}))
+
 vi.mock('@/lib/settings/load-settings', () => ({
   loadSettings: vi.fn().mockResolvedValue({
     own_twitter_handle: 'thedoomguy_ai',
@@ -54,7 +58,7 @@ describe('/api/settings/engagement-profiles/reconcile', () => {
   })
 
   it('desativa perfis same-owner já existentes', async () => {
-    const res = await POST()
+    const res = await POST(new Request('https://app.test/api/settings/engagement-profiles/reconcile', { method: 'POST' }))
     const body = await res.json()
 
     expect(res.status).toBe(200)

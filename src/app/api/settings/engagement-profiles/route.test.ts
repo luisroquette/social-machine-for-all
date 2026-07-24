@@ -4,6 +4,10 @@ vi.mock('@/lib/config/workspace', () => ({
   getActiveWorkspaceId: vi.fn().mockResolvedValue('workspace-1'),
 }))
 
+vi.mock('@/lib/api/auth', () => ({
+  getAuthorizedWorkspace: vi.fn().mockResolvedValue({ workspaceId: 'workspace-1', userId: 'user-1' }),
+}))
+
 vi.mock('@/lib/settings/load-settings', () => ({
   loadSettings: vi.fn().mockResolvedValue({
     own_twitter_handle: 'thedoomguy_ai',
