@@ -2,7 +2,7 @@
  * TESTE DE REGRESSÃO — dedup idempotente de replies (anti-resposta-duplicada)
  *
  * Por que este teste existe:
- * Em Jun/2026 o @thedoomguy_ai respondeu o MESMO comentário de terceiro dezenas a
+ * Em Jun/2026 o @your_ai_profile respondeu o MESMO comentário de terceiro dezenas a
  * centenas de vezes (406x no pior caso histórico). Causa: a chave de deduplicação
  * usava um formato de URL (`https://x.com/i/web/status/{id}`) diferente do formato
  * gravado no insert (`reply.url` = `https://x.com/{user}/status/{id}`). A query de
@@ -84,7 +84,7 @@ import { generateSimpleText } from '@/lib/ai/tool-loop'
 import { parseAIJson } from '@/lib/ai/parse-json'
 import { agent } from './index'
 
-const OWN_HANDLE = 'thedoomguy_ai'
+const OWN_HANDLE = 'your_ai_profile'
 const WORKSPACE_ID = '11111111-1111-4111-8111-111111111111'
 
 function makeCtx(): Parameters<typeof agent.execute>[0] {

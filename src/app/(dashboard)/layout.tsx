@@ -5,6 +5,7 @@ import { getActiveWorkspaceId } from '@/lib/config/workspace'
 import { WorkspaceSwitcher } from '@/components/workspace-switcher'
 import { WorkspaceProvider } from '@/components/workspace-provider'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 
 async function getSystemStatus(workspaceId: string): Promise<{ level: 'ok' | 'warn' | 'error'; label: string }> {
   try {
@@ -17,11 +18,11 @@ async function getSystemStatus(workspaceId: string): Promise<{ level: 'ok' | 'wa
       .eq('status', 'error')
       .gte('created_at', oneHourAgo)
     const errors = errorCount ?? 0
-    if (errors >= 3) return { level: 'error', label: `${errors} erros/h` }
-    if (errors > 0)  return { level: 'warn',  label: `${errors} erro/h` }
-    return { level: 'ok', label: 'Sistema ok' }
+    if (errors >= 3) return { level: 'error', label: `${errors} errors/h` }
+    if (errors > 0)  return { level: 'warn',  label: `${errors} error/h` }
+    return { level: 'ok', label: 'System healthy' }
   } catch {
-    return { level: 'warn', label: 'Status indisponível' }
+    return { level: 'warn', label: 'Status unavailable' }
   }
 }
 
@@ -53,12 +54,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <div className="container mx-auto flex h-14 items-center px-6">
             <h1 className="text-lg font-semibold">Social Machine v3.1</h1>
             <nav className="ml-8 flex gap-4 text-sm">
-              <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">Overview</a>
-              <a href="/agents" className="text-muted-foreground hover:text-foreground transition-colors">Agents</a>
-              <a href="/pipeline" className="text-muted-foreground hover:text-foreground transition-colors">Pipeline</a>
-              <a href="/trend-video" className="text-muted-foreground hover:text-foreground transition-colors">Trend Video</a>
-              <a href="/evaluations" className="text-muted-foreground hover:text-foreground transition-colors">Evaluations</a>
-              <a href="/settings" className="text-muted-foreground hover:text-foreground transition-colors">Settings</a>
+              <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">Overview</Link>
+              <Link href="/agents" className="text-muted-foreground hover:text-foreground transition-colors">Agents</Link>
+              <Link href="/pipeline" className="text-muted-foreground hover:text-foreground transition-colors">Pipeline</Link>
+              <Link href="/trend-video" className="text-muted-foreground hover:text-foreground transition-colors">Trend Video</Link>
+              <Link href="/evaluations" className="text-muted-foreground hover:text-foreground transition-colors">Evaluations</Link>
+              <Link href="/settings" className="text-muted-foreground hover:text-foreground transition-colors">Settings</Link>
             </nav>
             <div className="ml-auto flex items-center gap-4">
               {workspaces && workspaces.length > 1 && (

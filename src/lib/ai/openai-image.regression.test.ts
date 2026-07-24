@@ -59,7 +59,6 @@ describe('REGRESSÃO: background preto nas capas de Reel — openai-image.ts', (
 
     const { generateStoredImage } = await import('./openai-image')
 
-    let thrownMessage = ''
     try {
       // Acessar internamente via generateStoredImage que captura o erro
       await generateStoredImage({ prompt: 'test prompt for billing error', path: 'test/img.png', providerChain: 'openai' })

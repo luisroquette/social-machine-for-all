@@ -10,19 +10,19 @@ vi.mock('@/lib/api/auth', () => ({
 
 vi.mock('@/lib/settings/load-settings', () => ({
   loadSettings: vi.fn().mockResolvedValue({
-    own_twitter_handle: 'thedoomguy_ai',
+    own_twitter_handle: 'your_ai_profile',
     target_handle: 'example_handle',
   }),
   getVariable: vi.fn(async (_workspaceId: string, key: string) => {
     if (key === 'twitter_handle') return 'example_handle'
-    if (key === 'owned_x_handles') return 'luisroquette'
+    if (key === 'owned_x_handles') return 'example_owner'
     return ''
   }),
 }))
 
 const mockDeactivateEq = vi.fn().mockResolvedValue({ error: null })
 let mockProfiles = [
-  { id: '1', handle: 'luisroquette', platform: 'x', active: true },
+  { id: '1', handle: 'example_owner', platform: 'x', active: true },
   { id: '2', handle: 'usuario_externo', platform: 'x', active: true },
 ]
 
@@ -51,7 +51,7 @@ describe('/api/settings/engagement-profiles/reconcile', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockProfiles = [
-      { id: '1', handle: 'luisroquette', platform: 'x', active: true },
+      { id: '1', handle: 'example_owner', platform: 'x', active: true },
       { id: '2', handle: 'usuario_externo', platform: 'x', active: true },
     ]
     mockDeactivateEq.mockResolvedValue({ error: null })
@@ -64,7 +64,7 @@ describe('/api/settings/engagement-profiles/reconcile', () => {
     expect(res.status).toBe(200)
     expect(body.ok).toBe(true)
     expect(body.deactivatedCount).toBe(1)
-    expect(body.handles).toEqual(['luisroquette'])
+    expect(body.handles).toEqual(['example_owner'])
     expect(mockDeactivateEq).toHaveBeenCalled()
   })
 })

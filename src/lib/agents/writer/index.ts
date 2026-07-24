@@ -318,7 +318,7 @@ class WriterAgent extends BaseAgent {
             continue
           }
 
-          // ── brand MOB FORMAT ROTATION — reel é 100% news, feed_post/carousel são 100% evergreen ──
+          // ── YOUR BRAND FORMAT ROTATION — reel é 100% news, feed_post/carousel são 100% evergreen ──
           // Reels continuam vindo de qualquer fonte video-eligible (X/YouTube).
           // feed_post/carousel só nascem de source_platform='pillar' (semeado por
           // evergreen-seed-brand) ou 'seasonal' (semeado por seasonal-brand,
@@ -669,7 +669,7 @@ class WriterAgent extends BaseAgent {
     // ── BRAND IDENTITY & CONTENT SCOPE ──
     const lines = [
       `## IDENTIDADE DA MARCA`,
-      `Voce publica para @example_handle no Twitter/X e @inteligencia.artificial.brazil no Instagram.`,
+      `Voce publica para @example_handle no Twitter/X e @your_brand no Instagram.`,
       `Tom: engenheiro senior brasileiro que testa IA em producao e compartilha descobertas reais.`,
       '',
       `## ESCOPO DE CONTEUDO (INVIOLAVEL)`,
@@ -881,7 +881,7 @@ class WriterAgent extends BaseAgent {
         '    { "text": "HOOK: pergunta provocativa ou dado surpreendente", "duration": 3, "style": "bold-center" },',
         '    { "text": "INSIGHT: ponto principal com dado concreto", "duration": 3, "style": "stat-highlight" },',
         '    { "text": "DETALHE: contexto ou exemplo pratico", "duration": 3, "style": "body" },',
-        '    { "text": "CTA: Siga @inteligencia.artificial.brazil para mais", "duration": 3, "style": "cta" }',
+        '    { "text": "CTA: Siga @your_brand para mais", "duration": 3, "style": "cta" }',
         '  ],',
         '  "caption": "Caption completo com 10-20 hashtags relevantes...",',
         '  "image_prompts": [',
@@ -926,7 +926,7 @@ class WriterAgent extends BaseAgent {
           '',
           '## EXCEÇÃO QUE ANULA O FRAMEWORK ABAIXO: se a FONTE contiver "RESTRIÇÃO OBRIGATÓRIA" proibindo CTA comercial',
           '(ex.: datas de luto/homenagem), a "ESTRUTURA OBRIGATÓRIA" dos frameworks de carousel/feed_post NÃO se aplica',
-          'ao CTA/Slide 5: substitua por encerramento sóbrio, sem venda, sem "brand.com.br", sem convite de contato,',
+          'ao CTA/Slide 5: substitua por encerramento sóbrio, sem venda, sem "your-company.example", sem convite de contato,',
           'sem @brand promocional. O restante da estrutura (headline/kpi/dados) segue normal.',
           '',
           '## ALTERNATIVA — Se target_format = "carousel":',
@@ -943,7 +943,7 @@ class WriterAgent extends BaseAgent {
           'Slide 2 — PROBLEMA: desafio real que empresas enfrentam sem infra EV (baseado na fonte)',
           'Slide 3 — SOLUÇÃO: o que a Brand resolve — nomear o serviço',
           'Slide 4 — PROVA: dado de mercado ou contexto presente na fonte',
-          'Slide 5 — CTA: chamada para ação + brand.com.br',
+          'Slide 5 — CTA: chamada para ação + your-company.example',
           '',
           'REGRAS:',
           '- headline de cada slide: máx 6 palavras, MAIÚSCULAS',
@@ -954,7 +954,7 @@ class WriterAgent extends BaseAgent {
           '  • Slide 3: solução em ação (eletroposto instalado, infra corporativa)',
           '  • Slide 4: resultado ou panorama do mercado',
           '  • Slide 5: fundo escuro minimalista (deep blacks, subtle violet gradient, no objects)',
-          '- caption: legenda de venda com hook na primeira linha + CTA "👉 brand.com.br" + 8-12 hashtags EV',
+          '- caption: legenda de venda com hook na primeira linha + CTA "👉 your-company.example" + 8-12 hashtags EV',
           '',
           'Retorne JSON:',
           '```json',
@@ -964,11 +964,11 @@ class WriterAgent extends BaseAgent {
           '  "slides": [',
           '    { "type": "cover", "headline": "DADO IMPACTANTE", "kpi": "métrica", "image_prompt": "..." },',
           '    { "type": "content", "headline": "O PROBLEMA HOJE", "body": "frase do problema.", "image_prompt": "..." },',
-          '    { "type": "content", "headline": "brand MOB RESOLVE", "body": "serviço específico.", "kpi": "resultado", "image_prompt": "..." },',
+          '    { "type": "content", "headline": "YOUR BRAND RESOLVE", "body": "serviço específico.", "kpi": "resultado", "image_prompt": "..." },',
           '    { "type": "content", "headline": "PROVA DO MERCADO", "body": "dado ou contexto.", "kpi": "métrica", "image_prompt": "..." },',
-          '    { "type": "cta", "headline": "FALE COM ESPECIALISTA", "body": "Do projeto à instalação. brand.com.br", "image_prompt": "dark minimal, deep blacks, subtle violet gradient, no text no objects" }',
+          '    { "type": "cta", "headline": "FALE COM ESPECIALISTA", "body": "Do projeto à instalação. your-company.example", "image_prompt": "dark minimal, deep blacks, subtle violet gradient, no text no objects" }',
           '  ],',
-          '  "caption": "hook na primeira linha (máx 100 chars)\\n\\ncontexto + dado + relevância para público-alvo\\n\\nSua empresa precisa de infra EV? A Brand resolve. 👉 brand.com.br\\n\\n@brand\\n\\n#eletroposto #EVBrasil #mobilidadeeletrica #frota #infraestruturaEV #brand"',
+          '  "caption": "hook na primeira linha (máx 100 chars)\\n\\ncontexto + dado + relevância para público-alvo\\n\\nSua empresa precisa de infra EV? A Brand resolve. 👉 your-company.example\\n\\n@brand\\n\\n#eletroposto #EVBrasil #mobilidadeeletrica #frota #infraestruturaEV #brand"',
           '}',
           '```',
           '',
@@ -983,7 +983,7 @@ class WriterAgent extends BaseAgent {
           '  "context": "1-2 frases de contexto com dado da fonte. Este texto é renderizado como bloco na imagem — NUNCA um parágrafo inteiro.",',
           '  "kpi": "métrica impactante (somente se existir número na fonte). Se a fonte não trouxer nenhuma métrica pública, OMITA este campo — nunca preencha com score/prioridade/ângulo/selo do pipeline interno.",',
           '  "image_prompt": "prompt cinematográfico dark EV B2B 9:16 (inglês, 100-200 chars)",',
-          '  "caption": "hook na primeira linha (máx 100 chars)\\n\\ncontexto + dado + público-alvo\\n\\nCTA 👉 brand.com.br\\n\\n@brand\\n\\n#eletroposto #EVBrasil #mobilidadeeletrica"',
+          '  "caption": "hook na primeira linha (máx 100 chars)\\n\\ncontexto + dado + público-alvo\\n\\nCTA 👉 your-company.example\\n\\n@brand\\n\\n#eletroposto #EVBrasil #mobilidadeeletrica"',
           '}',
           '```',
           'NUNCA copie campos de metadado interno (score, prioridade editorial, ângulo, selo, launch_score) para "context" ou "kpi" — esses campos existem só para você julgar relevância, não são conteúdo publicável.',

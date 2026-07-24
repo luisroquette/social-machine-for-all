@@ -110,12 +110,12 @@ Exemplos fortes:
 - "1.5M EVs ATÉ 2030"
 - "CARREGA EM 10 MINUTOS"
 highlightWords: 2-3 palavras de alto impacto do hookTitle
-subtitle: 30-40 chars — o QUE A brand MOB RESOLVE neste contexto (ex: "infraestrutura EV corporativa", "eletroposto para condomínios")
+subtitle: 30-40 chars — o QUE A MARCA RESOLVE neste contexto (ex: "infraestrutura EV corporativa", "eletroposto para condomínios")
 kpi: OBRIGATÓRIO se o conteúdo contiver qualquer número relevante. Métrica impactante curta (ex: "40% menos custo", "350kW em 10min", "R$ 2.5B mercado 2026"). Omitir apenas se não há número relevante.
 
 REGRA OBRIGATÓRIA DE AUTOINTELIGIBILIDADE: alguém que veja só a capa (hookTitle + subtitle + kpi), sem ouvir o áudio nem ler a legenda completa, DEVE entender do que o conteúdo trata. Se o conteúdo original (CONTEÚDO ORIGINAL / TRANSCRIÇÃO abaixo) for sobre um mercado, país, empresa ou caso específico que NÃO seja o Brasil, o hookTitle OU o subtitle DEVE deixar isso explícito (ex: "ÍNDIA: 6.000 ELETROPOSTOS ATÉ 2030" em vez de só "6.000 ELETROPOSTOS ATÉ 2030"). Nunca omita o país/origem quando o dado não for do mercado brasileiro — isso confunde o público, que pode ler o número como sendo do Brasil.
 
-TAREFA 3: caption Instagram — OBJETIVO: GERAR LEADS para brand.com.br
+TAREFA 3: caption Instagram — OBJETIVO: GERAR LEADS para your-company.example
 
 A Brand oferece soluções completas de infraestrutura EV: venda de eletropostos, instalação e consultoria para empresas.
 Escolha o enquadramento mais relevante para este conteúdo:
@@ -135,11 +135,11 @@ Use essa estrutura como trilho invisível. Não escreva labels como "Cold open" 
 REGRAS OBRIGATÓRIAS:
 - PRIMEIRA LINHA (máx 100 chars): gancho de máximo impacto — aparece antes do "ver mais" no feed
 - Comprimento variável: às vezes 2 parágrafos compactos (~130 palavras), às vezes 3-4 com mais contexto (~200 palavras). Nunca mesma estrutura em posts consecutivos.
-- CTA de conversão obrigatório com "👉 brand.com.br". Pode aparecer no penúltimo parágrafo em vez do último.
+- CTA de conversão obrigatório com "👉 your-company.example". Pode aparecer no penúltimo parágrafo em vez do último.
   Exemplos de CTA:
-  • "Sua empresa ainda não tem infraestrutura de recarga? A Brand resolve do projeto à instalação. 👉 brand.com.br"
-  • "Gestor de frota? Calculamos o ROI da eletrificação para você. 👉 brand.com.br"
-  • "Quer eletroposto no seu condomínio ou posto? A Brand implementa. 👉 brand.com.br"
+  • "Sua empresa ainda não tem infraestrutura de recarga? A Brand resolve do projeto à instalação. 👉 your-company.example"
+  • "Gestor de frota? Calculamos o ROI da eletrificação para você. 👉 your-company.example"
+  • "Quer eletroposto no seu condomínio ou posto? A Brand implementa. 👉 your-company.example"
 - Mencione ${instagramHandle} uma vez
 - Sem bullet points. Parágrafos fluidos. Mínimo 130 palavras.
 - 8-12 hashtags: misturar #eletroposto #EVBrasil #mobilidadeeletrica com hashtags do segmento (#frota #gestaofrota | #construcao #incorporadora | #postosdecombustivel | #prefeitura #mobilidadesustentavel)
@@ -148,7 +148,7 @@ ${comentaCTACount >= 2 ? '- PROIBIDO usar "comenta X" como CTA neste post — li
 
 TAREFA 4: imagePrompt — fundo cinematográfico 9:16 específico para este conteúdo.
 
-ESTÉTICA brand MOB: fundo escuro (#070609), iluminação violeta/azul elétrico, tech-forward premium B2B. NÃO consumer-flashy.
+ESTÉTICA DA MARCA: fundo escuro (#070609), iluminação violeta/azul elétrico, tech-forward premium B2B. NÃO consumer-flashy.
 
 REGRA DE COMPOSIÇÃO OBRIGATÓRIA: o sujeito principal (veículo, eletroposto, etc.) deve ocupar os 55% SUPERIORES do frame. Os 45% INFERIORES devem ser escuros/sombreados — serão cobertos pelo overlay de texto. NUNCA centralize o sujeito verticalmente.
 

@@ -170,11 +170,10 @@ class ReviewerAgent extends BaseAgent {
           continue
         }
 
-        // ── BRAND SAFETY brand MOB: roda ANTES do auto-approve e do LLM ──
+        // ── BRAND SAFETY YOUR BRAND: roda ANTES do auto-approve e do LLM ──
         // Draft com framing negativo sobre EVs (incêndio, acidente, recall) nunca
         // é aprovado — a brand vende eletromobilidade; manchete de medo afasta o
-        // comprador. Ver src/lib/brand/brand-brand-safety.ts (Reel "11 EVS EM
-        // CHAMAS", 07/07/2026).
+        // comprador. Ver src/lib/brand/brand-brand-safety.ts.
         if (features.negative_ev_guardrail && hasNegativeEvFraming(draft.content)) {
           const issue = 'Brand safety Brand: conteudo associa EV a perigo (incendio/acidente/recall)'
           const { error: updateError } = await supabase

@@ -623,7 +623,7 @@ class SeoStrategistAgent extends BaseAgent {
           let html: string
           try {
             res = await fetch(safeUrl.href, {
-              headers: { 'User-Agent': 'Mozilla/5.0 (compatible; SocialMachineBot/2.0; +https://thedoomguy.ai)' },
+              headers: { 'User-Agent': 'SocialMachineBot/3.1' },
               signal: AbortSignal.timeout(15_000),
             })
             html = await res.text()

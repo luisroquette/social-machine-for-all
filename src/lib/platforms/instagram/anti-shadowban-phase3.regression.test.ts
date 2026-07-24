@@ -83,7 +83,7 @@ describe('REGRESSÃO: B1 — applyMicroVariation altera ~20% das captions', asyn
 describe('REGRESSÃO: A3 pause week foi REMOVIDO em 04/07/2026 — não reintroduzir', () => {
   // Veredito do usuário: pausa cega de 1 semana a cada 13 (AI&Tech) / 11 (brand)
   // sem evidência de benefício anti-shadowban, violava a cota mínima de
-  // publicação (CLAUDE.md) e mascarou o outage do DoomGuyFrame (28/06–04/07:
+  // publicação (CLAUDE.md) e mascarou o outage do EditorialFrame (28/06–04/07:
   // 7 dias sem postar, alertas suprimidos). O risco real de queda de alcance é
   // coberto pelo C1 (reach-trend monitor), que pausa 48h baseado em DADO.
   const fs = require('node:fs')

@@ -31,7 +31,7 @@ export function parseAIJson<T = unknown>(
   }
 
   // Step 1: Remove markdown code blocks
-  let cleaned = text
+  const cleaned = text
     .replace(/```json\s*/gi, '')
     .replace(/```\s*/g, '')
     .trim()

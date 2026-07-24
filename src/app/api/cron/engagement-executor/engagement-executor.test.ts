@@ -1,7 +1,7 @@
 /**
  * TESTE DE REGRESSÃO — executor anti-self-engagement
  *
- * Bug confirmado em 2026-04-30: 50+ ações pending contra @thedoomguy_ai
+ * Bug confirmado em 2026-04-30: 50+ ações pending contra @your_ai_profile
  * na tabela engagement_actions. O executor processava a fila cegamente,
  * sem verificar se a ação era direcionada ao próprio handle.
  *
@@ -14,7 +14,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { loadSettings } from '@/lib/settings/load-settings'
 
-const OWN_HANDLE = 'thedoomguy_ai'
+const OWN_HANDLE = 'your_ai_profile'
 const NOON_UTC = new Date('2026-04-30T12:00:00Z') // fora do quiet hours (00-08 UTC)
 
 // ── Mocks (devem usar literais, não variáveis — vi.mock é hoisted) ──
@@ -28,10 +28,10 @@ vi.mock('@/lib/config/workspace', () => ({
 }))
 
 vi.mock('@/lib/settings/load-settings', () => ({
-  loadSettings: vi.fn().mockResolvedValue({ own_twitter_handle: 'thedoomguy_ai' }),
+  loadSettings: vi.fn().mockResolvedValue({ own_twitter_handle: 'your_ai_profile' }),
   getVariable: vi.fn(async (_workspaceId: string, key: string) => {
     if (key === 'twitter_handle') return 'example_handle'
-    if (key === 'owned_x_handles') return ''
+    if (key === 'owned_x_handles') return 'example_owner'
     return ''
   }),
 }))
@@ -116,8 +116,8 @@ function makeSameOwnerAliasAction(id: string, actionType = 'comment') {
     id,
     action_type: actionType,
     target_platform: 'x',
-    target_url: `https://x.com/luisroquette/status/${id}`,
-    target_author: 'luisroquette',
+    target_url: `https://x.com/example_owner/status/${id}`,
+    target_author: 'example_owner',
     comment_text: 'Isso também precisa ser bloqueado',
     metadata: { guardrail: { version: 'v2' } },
   }
@@ -208,7 +208,7 @@ describe('engagement-executor — guardrail anti-self-engagement', () => {
     expect(mockReply).toHaveBeenCalledOnce()
   })
 
-  it('REGRESSÃO: bloqueia alias same-owner @luisroquette já enfileirado', async () => {
+  it('REGRESSÃO: bloqueia alias same-owner @example_owner já enfileirado', async () => {
     mockActions = [makeSameOwnerAliasAction('888', 'comment')]
 
     const res = await GET(makeRequest())

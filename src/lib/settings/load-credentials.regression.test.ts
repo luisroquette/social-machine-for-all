@@ -1,7 +1,7 @@
 /**
  * REGRESSÃO: Cross-workspace credential isolation
  *
- * Cobre o bug crítico de 19/04–17/05/2026 onde 94 posts do @thedoomguy_ai
+ * Cobre o bug crítico de 19/04–17/05/2026 onde 94 posts do @your_ai_profile
  * foram publicados no @brand porque getInstagramCredentials() caia para
  * as env vars (INSTAGRAM_USER_ID/INSTAGRAM_ACCESS_TOKEN do Brand) quando
  * o workspace AI & Tech não tinha credenciais no banco.
@@ -114,7 +114,7 @@ describe('REGRESSÃO: cross-workspace credential isolation — Instagram', () =>
 
 describe('REGRESSÃO: prefere token EAA permanente sobre IGAA que expira', () => {
   /**
-   * Bug de 15/06/2026: o @thedoomguy_ai tinha um token IGAA (graph.instagram.com,
+   * Bug de 15/06/2026: o @your_ai_profile tinha um token IGAA (graph.instagram.com,
    * ~60 dias) no campo `accessToken` e o token EAA permanente (nunca expira) parado
    * em `pageAccessToken`. getInstagramCredentials devolvia o IGAA → ao expirar,
    * reels e stories pararam silenciosamente. O fix passa a preferir o EAA +

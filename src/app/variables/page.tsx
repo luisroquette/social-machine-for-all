@@ -7,8 +7,8 @@ const SCHEMA = [
   {
     category: 'Contas & Redes Sociais',
     fields: [
-      { key: 'instagram_handle',   dbCat: 'accounts', label: 'Handle do Instagram',        description: 'Handle completo do perfil Instagram (com @)',             type: 'text',   default: '@inteligencia.artificial.brazil' },
-      { key: 'own_twitter_handle', dbCat: 'accounts', label: 'Handle próprio no X/Twitter', description: 'Sem @ — usado para filtrar replies do engagement agent',  type: 'text',   default: 'thedoomguy_ai' },
+      { key: 'instagram_handle',   dbCat: 'accounts', label: 'Handle do Instagram',        description: 'Handle completo do perfil Instagram (com @)',             type: 'text',   default: '@your_brand' },
+      { key: 'own_twitter_handle', dbCat: 'accounts', label: 'Handle próprio no X/Twitter', description: 'Sem @ — usado para filtrar replies do engagement agent',  type: 'text',   default: 'your_brand' },
       { key: 'target_handle',      dbCat: 'platform', label: 'Handle monitorado no X',      description: 'Sem @ — handle que o radar monitora para curadoria',      type: 'text',   default: 'example_handle' },
     ],
   },

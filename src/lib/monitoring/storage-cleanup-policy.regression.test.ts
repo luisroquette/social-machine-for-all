@@ -1,14 +1,11 @@
 /**
  * REGRESSÃO: cleanup-storage deixava metade do bucket 'reels' crescer para sempre.
  *
- * Bug (descoberto 04/07/2026, bucket em 13 GB):
- * 1. O cron só limpava downloads/ e covers/. As pastas de render do Railway
- *    (capcut/ 2.4GB morto desde 06/06, doomguy-frame/ 2.2GB, brand-frame/ 1.2GB,
- *    brand-frame/ 0.7GB) nunca entravam na lista → 6.5GB de lixo permanente.
+ * 1. O cron só limpava downloads/ e covers/, ignorando pastas de render.
  * 2. list(folder, { limit: 500 }) sem paginação, ordenado por NOME: com 620
  *    arquivos em downloads/, 120+ ficavam invisíveis para SEMPRE (vídeos de
  *    40+ dias vivos com política de 30).
- * 3. O bucket 'brand-mob' não tinha limpeza nenhuma (backgrounds/ crescendo).
+ * 3. O bucket 'brand-assets' não tinha limpeza nenhuma (backgrounds/ crescendo).
  *
  * Estes testes quebram o build se as pastas sumirem da política ou se a
  * paginação for removida.
@@ -18,21 +15,20 @@ import { CLEANUP_TARGETS, PROTECTED_FOLDERS, isExpired, listAllFiles } from './s
 
 describe('REGRESSÃO: política de limpeza cobre as pastas que crescem', () => {
   const reelsFolders = CLEANUP_TARGETS.filter(t => t.bucket === 'reels').map(t => t.folder)
-  const brandFolders = CLEANUP_TARGETS.filter(t => t.bucket === 'brand-mob').map(t => t.folder)
+  const brandFolders = CLEANUP_TARGETS.filter(t => t.bucket === 'brand-assets').map(t => t.folder)
 
   it('pastas de render do Railway estão na política (eram o buraco de 6.5GB)', () => {
-    expect(reelsFolders).toContain('doomguy-frame')
-    expect(reelsFolders).toContain('brand-frame')
+    expect(reelsFolders).toContain('editorial-frame')
     expect(reelsFolders).toContain('brand-frame')
     expect(reelsFolders).toContain('capcut')
   })
 
-  it('capcut/ (pipeline morto desde 06/06/2026) tem retenção 0 — purge total', () => {
+  it('capcut/ legado tem retenção 0 — purge total', () => {
     const capcut = CLEANUP_TARGETS.find(t => t.folder === 'capcut')
     expect(capcut?.retentionDays).toBe(0)
   })
 
-  it('bucket brand-mob entrou na política (não tinha limpeza nenhuma)', () => {
+  it('bucket brand-assets entrou na política (não tinha limpeza nenhuma)', () => {
     expect(brandFolders).toContain('backgrounds')
     expect(brandFolders).toContain('carousel')
     expect(brandFolders).toContain('posts')
@@ -44,7 +40,7 @@ describe('REGRESSÃO: política de limpeza cobre as pastas que crescem', () => {
   })
 
   it('frames renderizados têm ≥14d — margem p/ claim do BRAND e retries', () => {
-    for (const f of ['doomguy-frame', 'brand-frame', 'brand-frame']) {
+    for (const f of ['editorial-frame', 'brand-frame']) {
       const t = CLEANUP_TARGETS.find(x => x.folder === f)
       expect(t!.retentionDays).toBeGreaterThanOrEqual(14)
     }

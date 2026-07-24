@@ -1,7 +1,7 @@
 /**
  * Engagement insights — aprendizado a partir do engajamento REAL dos Reels (não do review_score).
  *
- * Análise do corpus (@thedoomguy_ai, jun/2026): reach é cauda longa — mediana ~102,
+ * Análise do corpus (@your_ai_profile, jun/2026): reach é cauda longa — mediana ~102,
  * top decil 1k–15k. O divisor é RETENÇÃO: reels com reach >=1000 têm ~11.6s de watch
  * time vs ~4.6s nos que morrem em <300. Os ganchos vencedores abrem com CURIOSIDADE +
  * PROTAGONISTA NOMEADO + STAKES (ex: "O CARA QUE DELETOU O CHATGPT DEPOIS DE VER O QUE

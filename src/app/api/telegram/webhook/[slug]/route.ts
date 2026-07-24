@@ -222,13 +222,18 @@ export async function POST(request: Request, { params }: RouteParams) {
       // Auto email
       if (lowerMsg.includes('email')) {
         try {
+          const notificationEmail = process.env.NOTIFICATION_EMAIL
+          if (!notificationEmail) {
+            await sendMessage(botToken, chat.id, '⚠️ NOTIFICATION_EMAIL não configurado')
+            return NextResponse.json({ ok: true })
+          }
           const { sendReportEmail } = await import('@/lib/export/report-email')
           const subject = contentTitle
             ? `[SM] ${contentTitle}`
             : `[SM] Relatorio ${new Date().toLocaleDateString('pt-BR')}`
           const { data: ws } = await supabase.from('workspaces').select('name').eq('id', workspaceId).maybeSingle() as { data: { name: string } | null }
           await sendReportEmail({
-            to: 'lfrprojects.ai@gmail.com',
+            to: notificationEmail,
             subject,
             content: result.response,
             label: { system: 'Social Machine V3.1', scope: ws?.name || workspaceId },

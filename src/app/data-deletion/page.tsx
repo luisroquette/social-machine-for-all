@@ -77,8 +77,8 @@ export default async function DataDeletionPage({
             <p>
               Para solicitar exclusão manual de dados ou esclarecimentos:
               <br />
-              <a href="mailto:contato@brand.com.br" style={{ color: '#8B35FF' }}>
-                contato@brand.com.br
+              <a href="mailto:contato@your-company.example" style={{ color: '#8B35FF' }}>
+                contato@your-company.example
               </a>
             </p>
           </section>

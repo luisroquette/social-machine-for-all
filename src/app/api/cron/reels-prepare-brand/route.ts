@@ -159,7 +159,7 @@ export async function GET(request: Request) {
     const text = c.source_content || ''
     // Brand safety: EV associado a perigo (incêndio, acidente, recall) nunca vira
     // reel — este cron insere DIRETO como reel_ready, sem passar pelo reviewer.
-    // Ver src/lib/brand/brand-brand-safety.ts (Reel "11 EVS EM CHAMAS", 07/07/2026).
+    // See src/lib/brand/brand-brand-safety.ts.
     if (hasNegativeEvFraming(text)) return false
     if (!EV_KEYWORDS.test(text) && !TESLA_EV_CONTEXT.test(text)) return false
     const cleanText = text.replace(/https?:\/\/\S+/g, '').replace(/@\w+/g, '').trim()

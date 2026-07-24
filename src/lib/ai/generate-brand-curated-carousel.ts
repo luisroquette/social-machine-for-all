@@ -2,7 +2,7 @@ import { getAdminClient } from '@/lib/supabase/admin'
 import { getBaseUrl } from '@/lib/api/base-url'
 import { detectBrand, resolveLogoUrl } from './brand-logos'
 
-const BUCKET = 'brand-mob'
+const BUCKET = 'brand-assets'
 
 export type CuratedCarouselSlide = {
   type: 'cover' | 'content' | 'cta'

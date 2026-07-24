@@ -82,12 +82,12 @@ export default function PrivacyPage() {
         <p>
           Para dúvidas sobre esta política ou solicitações relacionadas a dados:
           <br />
-          <a href="mailto:contato@brand.com.br" style={{ color: '#8B35FF' }}>
-            contato@brand.com.br
+          <a href="mailto:contato@your-company.example" style={{ color: '#8B35FF' }}>
+            contato@your-company.example
           </a>
           <br />
-          <a href="https://brand.com.br" style={{ color: '#8B35FF' }}>
-            brand.com.br
+          <a href="https://your-company.example" style={{ color: '#8B35FF' }}>
+            your-company.example
           </a>
         </p>
       </section>

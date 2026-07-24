@@ -91,7 +91,7 @@ vi.mock('@/lib/supabase/admin', () => ({
     storage: {
       from: () => ({
         upload: mockStorageUpload,
-        getPublicUrl: (path: string) => ({ data: { publicUrl: `https://storage.example.com/brand-mob/${path}` } }),
+        getPublicUrl: (path: string) => ({ data: { publicUrl: `https://storage.example.com/brand-assets/${path}` } }),
       }),
     },
   }),
@@ -133,7 +133,7 @@ describe('publishNextMarketingAsset', () => {
     // nunca publicado cru.
     expect(mockPublishImage).toHaveBeenCalledWith(
       expect.not.stringContaining('#hashtag'),
-      'https://storage.example.com/brand-mob/marketing-frames/asset-1.png',
+      'https://storage.example.com/brand-assets/marketing-frames/asset-1.png',
       expect.any(String),
     )
     expect(mockStorageUpload).toHaveBeenCalled()

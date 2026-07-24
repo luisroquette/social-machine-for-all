@@ -34,7 +34,7 @@ vi.mock('@/lib/settings/load-settings', () => ({
   getVariable: vi.fn().mockImplementation((_wid: string, key: string) => {
     const defaults: Record<string, string> = {
       ai_keywords_pattern: 'openai|gpt|gemini|llm|ai|anthropic',
-      instagram_handle: '@thedoomguy_ai',
+      instagram_handle: '@your_ai_profile',
       reference_style_account: '@uncover.ai',
       reel_prep_model: 'claude-sonnet-4-6',
     }
@@ -299,7 +299,7 @@ describe('REGRESSÃO: reels-prepare — OOM em vídeos 4K (bug 2026-05-22)', () 
       getVariable: vi.fn().mockImplementation((_wid: string, key: string) => {
         const defaults: Record<string, string> = {
           ai_keywords_pattern: 'openai|gpt|gemini|llm|ai|anthropic',
-          instagram_handle: '@thedoomguy_ai',
+          instagram_handle: '@your_ai_profile',
           reference_style_account: '@uncover.ai',
           reel_prep_model: 'claude-sonnet-4-6',
         }

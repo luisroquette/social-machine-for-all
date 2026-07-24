@@ -9,7 +9,7 @@ import { sendReportEmail } from '@/lib/export/report-email'
 import { isOpenAiQuotaExceeded } from '@/lib/ai/check-openai-quota'
 import { createDbErrorCollector, guardCount, guardData } from '@/lib/monitoring/heartbeat-query-guard'
 
-const ALERT_EMAIL = 'lfrprojects.ai@gmail.com'
+const ALERT_EMAIL = process.env.NOTIFICATION_EMAIL?.trim() ?? ''
 const EMAIL_COOLDOWN_MS = 4 * 60 * 60 * 1000 // 4h entre emails do mesmo alerta
 
 // Optional second workspace monitored by this installation. It is never bundled.
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
   const supabase = getAdminClient()
   const threeHoursAgo = new Date(now.getTime() - 3 * 60 * 60 * 1000).toISOString()
   // Lido do settings, não hardcoded — evita que os avisos fiquem com o @ errado
-  // depois de uma troca de handle (histórico: @thedoomguy_ai → @inteligencia.artificial.brazil).
+  // depois de uma troca de handle (histórico: @your_ai_profile → @your_brand).
   const igHandle = await getVariable(WORKSPACE_ID, 'instagram_handle')
 
   // NOTE: stale agents are intentionally NOT checked here.
@@ -207,7 +207,7 @@ export async function GET(request: Request) {
 
   // A3 (pause week) foi removido em 04/07/2026 — a supressão de alertas por
   // "pausa intencional" saiu junto. Fila vazia agora alerta SEMPRE, sem
-  // exceção de calendário (a supressão mascarou o outage do DoomGuyFrame).
+  // exceção de calendário (a supressão mascarou o outage do EditorialFrame).
 
   // ── New checks: reel_ready queue depth + stuck publishing ──
   const thirtyMinAgo = new Date(now.getTime() - 30 * 60 * 1000).toISOString()
@@ -439,7 +439,7 @@ export async function GET(request: Request) {
       // ── Email — somente alertas críticos (🔴), cooldown 4h ──
       const criticalWarnings = warnings.filter(w => w.startsWith('🔴'))
       const emailCooldownOk = !lastEmailAt || (now.getTime() - new Date(lastEmailAt).getTime()) >= EMAIL_COOLDOWN_MS
-      if (criticalWarnings.length > 0 && emailCooldownOk) {
+      if (criticalWarnings.length > 0 && emailCooldownOk && ALERT_EMAIL) {
         const timestamp = now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' })
         const content = [
           `## 🔴 Alerta Crítico — Social Machine`,

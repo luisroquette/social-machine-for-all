@@ -14,7 +14,7 @@ Gerar 1 video viral por dia a partir de temas em alta no Brasil, sem depender de
 - `trend_video_jobs`
 - `trend_style_stats`
 
-Migration: [supabase/migrations/022_trend_video_pipeline.sql](/Users/luisroquette/social-machine-v3.1/supabase/migrations/022_trend_video_pipeline.sql:1)
+Migrations: [`supabase/migrations`](../supabase/migrations)
 
 ## Endpoints
 

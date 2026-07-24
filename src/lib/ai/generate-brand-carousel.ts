@@ -13,7 +13,7 @@ import { getBaseUrl } from '@/lib/api/base-url'
 import { detectBrand, resolveLogoUrl } from './brand-logos'
 import { callOpenRouterImage } from './openrouter'
 
-const BUCKET = 'brand-mob'
+const BUCKET = 'brand-assets'
 const GEMINI_IMAGE_MODEL = 'gemini-3.1-flash-image'
 
 async function generateBackground(prompt: string, index: number): Promise<Buffer | null> {

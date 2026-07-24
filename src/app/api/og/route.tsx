@@ -6,6 +6,9 @@ export const runtime = 'edge'
 export async function GET(req: NextRequest) {
   const text = req.nextUrl.searchParams.get('text') ?? ''
   const display = text.slice(0, 220)
+  const handle = req.nextUrl.searchParams.get('handle') ?? '@your_brand'
+  const label = req.nextUrl.searchParams.get('label') ?? 'Your topics'
+  const website = req.nextUrl.searchParams.get('website') ?? 'your-company.com'
 
   return new ImageResponse(
     (
@@ -38,7 +41,7 @@ export async function GET(req: NextRequest) {
             💀
           </div>
           <div style={{ color: '#9ca3af', fontSize: '20px', fontWeight: 600 }}>
-            @thedoomguy_ai
+            {handle}
           </div>
         </div>
 
@@ -69,7 +72,7 @@ export async function GET(req: NextRequest) {
           }}
         >
           <div style={{ color: '#6b7280', fontSize: '18px' }}>
-            IA • ML • Tech • Brasil
+            {label}
           </div>
           <div
             style={{
@@ -81,7 +84,7 @@ export async function GET(req: NextRequest) {
               fontWeight: 600,
             }}
           >
-            thedoomguy.ai
+            {website}
           </div>
         </div>
       </div>

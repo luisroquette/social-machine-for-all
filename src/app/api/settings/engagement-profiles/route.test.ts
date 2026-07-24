@@ -10,12 +10,12 @@ vi.mock('@/lib/api/auth', () => ({
 
 vi.mock('@/lib/settings/load-settings', () => ({
   loadSettings: vi.fn().mockResolvedValue({
-    own_twitter_handle: 'thedoomguy_ai',
+    own_twitter_handle: 'your_ai_profile',
     target_handle: 'example_handle',
   }),
   getVariable: vi.fn(async (_workspaceId: string, key: string) => {
     if (key === 'twitter_handle') return 'example_handle'
-    if (key === 'owned_x_handles') return 'luisroquette'
+    if (key === 'owned_x_handles') return 'example_owner'
     return ''
   }),
 }))
@@ -70,7 +70,7 @@ describe('/api/settings/engagement-profiles', () => {
   it('bloqueia cadastro de handle same-owner', async () => {
     const res = await POST(new Request('https://app.test/api/settings/engagement-profiles', {
       method: 'POST',
-      body: JSON.stringify({ handle: '@LuisRoquette', platform: 'x' }),
+      body: JSON.stringify({ handle: '@example_owner', platform: 'x' }),
       headers: { 'Content-Type': 'application/json' },
     }))
 

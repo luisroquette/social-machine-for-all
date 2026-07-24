@@ -2,7 +2,7 @@ import { getAdminClient } from '@/lib/supabase/admin'
 import { getVariable, loadSettings } from '@/lib/settings/load-settings'
 import { parseHandleList } from '@/lib/agents/engagement-own/loop-guardrails'
 
-export const BUILTIN_OWNED_X_HANDLES = ['luisroquette', 'example_handle'] as const
+export const BUILTIN_OWNED_X_HANDLES = ['example_handle'] as const
 
 export function normalizeHandle(value: string | null | undefined): string {
   return (value ?? '').replace(/^@/, '').trim().toLowerCase()

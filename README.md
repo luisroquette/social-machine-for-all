@@ -3,7 +3,9 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/luisroquette/social-machine-for-all/actions/workflows/ci.yml"><img src="https://github.com/luisroquette/social-machine-for-all/actions/workflows/ci.yml/badge.svg" alt="CI status" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-52E0B3?style=flat-square" alt="MIT License" /></a>
+  <img src="https://img.shields.io/badge/node-%3E%3D20.9-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js 20.9 or newer" />
   <img src="https://img.shields.io/badge/self--hosted-your%20data-70B7FF?style=flat-square" alt="Self-hosted" />
   <img src="https://img.shields.io/badge/approval--first-by%20default-AE95FF?style=flat-square" alt="Approval first" />
   <img src="https://img.shields.io/badge/stack-Next.js%20%2B%20Supabase-111827?style=flat-square" alt="Next.js and Supabase" />
@@ -19,7 +21,7 @@
 </p>
 
 <p align="center">
-  <a href="#start-in-10-minutes"><strong>Get started</strong></a> ·
+  <a href="#quick-start"><strong>Get started</strong></a> ·
   <a href="#how-it-works"><strong>See the workflow</strong></a> ·
   <a href="#what-you-control"><strong>What you control</strong></a> ·
   <a href="CONTRIBUTING.md"><strong>Contribute</strong></a>
@@ -55,6 +57,9 @@ Watch a signal move through curation, drafting, quality review and approval.
 Nothing is published merely because an AI generated it: the workspace owns the
 rules and the final decision.
 
+> **Like the direction?** Star the repository so more teams can find it, then
+> fork it to build your own content operation.
+
 ## Table of contents
 
 - [Who this is for](#who-this-is-for)
@@ -62,7 +67,8 @@ rules and the final decision.
 - [What you get](#what-you-get)
 - [Compared with fragmented workflows](#compared-with-fragmented-workflows)
 - [What you control](#what-you-control)
-- [Start in 10 minutes](#start-in-10-minutes)
+- [Requirements](#requirements)
+- [Quick start](#quick-start)
 - [A practical first week](#a-practical-first-week)
 - [Example pipeline record](#example-pipeline-record)
 - [Architecture](#architecture)
@@ -150,7 +156,17 @@ Your deployment                      MIT-licensed source code
 
 No social account, token, workspace ID, deployment or scheduled job is bundled.
 
-## Start in 10 minutes
+## Requirements
+
+- Node.js 20.9 or newer and npm 10+
+- A Supabase project and the Supabase CLI
+- Git
+- An AI provider key only when you are ready to generate content
+
+You can install and explore the workspace without connecting social accounts,
+video rendering, analytics or email services.
+
+## Quick start
 
 ### 1. Clone and install
 
@@ -159,24 +175,52 @@ git clone https://github.com/luisroquette/social-machine-for-all.git
 cd social-machine-for-all
 cp .env.example .env.local
 npm ci
-npm run dev
 ```
 
 ### 2. Connect your own database
 
-Create a Supabase project, add the three Supabase variables to `.env.local`, and
-apply the migrations in [`supabase/migrations`](supabase/migrations).
+Create a Supabase project and copy its URL, anon key and service-role key into
+`.env.local`. Never expose the service-role key in browser code.
 
-### 3. Create your first workspace
+Then apply the included migrations:
 
-Create a Supabase Auth user, sign in, and open
-[`/onboarding`](http://localhost:3000/onboarding). Add your company name, a short
-description and the topics you want to cover.
+```bash
+npx supabase@latest login
+npx supabase@latest init
+npx supabase@latest link --project-ref YOUR_PROJECT_REF
+npx supabase@latest db push
+```
 
-### 4. Run the safe path first
+### 3. Create the local security secrets
+
+Generate two different values and add them to `CRON_SECRET` and
+`TELEGRAM_WEBHOOK_SECRET` in `.env.local`:
+
+```bash
+openssl rand -hex 32
+openssl rand -hex 32
+```
+
+### 4. Start and create your workspace
+
+Create a user in **Supabase → Authentication → Users**, then run:
+
+```bash
+npm run dev
+```
+
+Open [`http://localhost:3000/login`](http://localhost:3000/login), sign in and
+continue to [`/onboarding`](http://localhost:3000/onboarding). Add your company
+name, description and topics.
+
+### 5. Run the safe path first
 
 Configure sources and create drafts. Review them manually. Only then connect an
 AI provider, social account, publishing integration or schedule.
+
+For production, copy the same environment variables to your hosting provider,
+set `APP_BASE_URL` to the public URL and keep every optional integration disabled
+until its credentials and review flow are ready.
 
 ## A practical first week
 
@@ -200,7 +244,7 @@ like this:
   "workspace": "your-company",
   "source": {
     "url": "https://example.com/source",
-    "captured_at": "2026-07-24T12:00:00Z"
+    "captured_at": "2026-01-15T12:00:00Z"
   },
   "curation": {
     "relevance_score": 82,
@@ -238,8 +282,7 @@ not require every provider or every automation.
 
 ## Make it your own
 
-Capabilities are enabled per workspace through `workspace_settings`, never by a
-hard-coded company profile:
+Capabilities are enabled per workspace through `workspace_settings`:
 
 - `feature_instagram_image_generation`
 - `feature_evergreen_content`
@@ -252,6 +295,11 @@ hard-coded company profile:
 
 Set a value to `true` (or `1`) only after the corresponding editorial and
 technical setup is ready. Put your voice in workspace and agent system prompts.
+
+The generic pipeline also includes a disabled-by-default EV/Brazil vertical as a
+complete reference implementation. Its modules live under `src/lib/brand` and
+the `*-brand` routes. Keep it as an example, replace its vocabulary and policies
+for your market, or remove it if your company does not need that vertical.
 
 ## Costs and safety
 
@@ -324,3 +372,5 @@ account handles or workspace IDs.
 ## License
 
 MIT — use it, adapt it and build the content operation your company needs.
+
+If Social Machine helps your team, star the repository and share what you build.

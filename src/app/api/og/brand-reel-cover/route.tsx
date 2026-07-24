@@ -13,14 +13,14 @@ const PAD    = 72
 // topo/rodapé de qualquer forma — recuar os elementos também melhora lá.
 const GRID_CROP = 240
 
-// ── Brand Colors — Brand (from brand.com.br globals.css) ───────────────
+// ── Brand Colors — Brand (from your-company.example globals.css) ───────────────
 const VIOLET   = '#8B35FF'  // hsl(267 100% 65%) — brand-violet
 const LAVENDER = '#C4A1FF'  // hsl(263 100% 83%) — brand-lavender
 const GOLD     = '#E8B84B'  // hsl(43 70% 69%)   — brand-gold
 const BG_BASE  = '#070609'  // hsl(260 50% 3%)   — brand-void
 
 // ── Brand Assets ─────────────────────────────────────────────────────────────
-const brand_LOGO_URL = 'https://aosyonzvesotxppazugc.supabase.co/storage/v1/object/public/brand-mob/brand/logo.png'
+const BRAND_LOGO_URL = process.env.BRAND_LOGO_URL ?? ''
 
 // ── Fonts ─────────────────────────────────────────────────────────────────────
 const POPPINS_URL   = 'https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-ExtraBold.ttf'
@@ -114,14 +114,17 @@ export async function GET(req: NextRequest) {
             padding: '10px 28px 10px 10px',
           }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={brand_LOGO_URL}
-            width={72} height={72}
-            style={{ width: '72px', height: '72px', borderRadius: '50%', objectFit: 'cover' }}
-          />
+          {BRAND_LOGO_URL && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={BRAND_LOGO_URL}
+              alt=""
+              width={72} height={72}
+              style={{ width: '72px', height: '72px', borderRadius: '50%', objectFit: 'cover' }}
+            />
+          )}
           <span style={{ fontSize: 28, color: '#FFFFFF', letterSpacing: 2, fontWeight: 800 }}>
-            brand MOB
+            YOUR BRAND
           </span>
         </div>
 

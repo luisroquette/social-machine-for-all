@@ -4,7 +4,7 @@
  * Bug (mai/2026): tweets do Source 1 (TwitterAPI.io) entravam no curator com
  * mediaTypes=[] e videoUrl=null hardcoded. Isso fazia o reels-prepare nunca
  * encontrar candidatos com media_types=['video'], parando toda a produção de reels
- * do @thedoomguy_ai.
+ * do @your_ai_profile.
  *
  * Fix: extractMediaFromIoTweet() lê extendedEntities/entities da resposta real
  * da API em vez de retornar valores fixos vazios.

@@ -2,7 +2,7 @@
  * REGRESSÃO: garantia mínima de alerta "Instagram sem postagens" (2x/dia).
  *
  * Bug histórico: o heartbeat reativo (com dedup/cooldown/pause-week) silenciou
- * o outage do DoomGuyFrame por dias (29/06–04/07/2026). O usuário pediu uma
+ * o outage do EditorialFrame por dias (29/06–04/07/2026). O usuário pediu uma
  * garantia independente: o alerta de "sistema parado / sem postagens" deve
  * disparar todo dia, pelo menos 2x, enquanto o problema persistir — sem
  * depender de nenhuma lógica de supressão.

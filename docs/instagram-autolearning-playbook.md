@@ -10,16 +10,16 @@
 
 | Placeholder | O que é | Exemplo |
 |---|---|---|
-| `{{PROFILE_NAME}}` | Nome do perfil Instagram | `@thedoomguy_ai` |
-| `{{WORKSPACE_ID}}` | UUID do workspace no Supabase | `842858a6-...` |
-| `{{IG_BUSINESS_ID}}` | Instagram Business Account ID | `17841477880013573` |
-| `{{PAGE_ID}}` | ID da Página do Facebook conectada | `927048173825763` |
-| `{{META_APP_ID}}` | ID do app Meta | `2009216909636123` |
-| `{{PAGE_ACCESS_TOKEN}}` | Token permanente da Página (expires_at=0) | `EAAcjX0...` |
-| `{{BRAND_NAME}}` | Nome da marca/perfil | `The Doom Guy IA` |
+| `{{PROFILE_NAME}}` | Nome do perfil Instagram | `@your_ai_profile` |
+| `{{WORKSPACE_ID}}` | UUID do workspace no Supabase | `00000000-0000-4000-8000-000000000000` |
+| `{{IG_BUSINESS_ID}}` | Instagram Business Account ID | `17841400000000000` |
+| `{{PAGE_ID}}` | ID da Página do Facebook conectada | `123456789012345` |
+| `{{META_APP_ID}}` | ID do app Meta | `123456789012345` |
+| `{{PAGE_ACCESS_TOKEN}}` | Token permanente da Página (expires_at=0) | `YOUR_PAGE_ACCESS_TOKEN` |
+| `{{BRAND_NAME}}` | Nome da marca/perfil | `Your Brand` |
 | `{{BRAND_VOICE}}` | Tom de voz em 2-3 frases | "Direto, sem hype, dark humor" |
 | `{{NICHE}}` | Nicho de conteúdo | `IA e tecnologia` |
-| `{{SUPABASE_PROJECT}}` | Ref do projeto Supabase | `aosyonzvesotxppazugc` |
+| `{{SUPABASE_PROJECT}}` | Ref do projeto Supabase | `your-project-ref` |
 
 ---
 
@@ -265,5 +265,5 @@ ORDER BY created_at DESC LIMIT 5;
 
 ---
 
-*Baseado na implementação de referência do @thedoomguy_ai (Jun/2026).*
+*Baseado em uma implementação de referência anonimizada.*
 *Todos os comportamentos descritos foram verificados em produção.*

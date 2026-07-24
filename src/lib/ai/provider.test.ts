@@ -80,7 +80,7 @@ describe('REGRESSÃO: deepseek-chat migrado pro modelId deepseek-v4-flash (depre
 //     quando engagement_model não está configurado (nenhum workspace tem —
 //     bug ATIVO agora: toda resposta de comentário quebra com "Unknown model")
 //   - workspace_settings.writer_model = 'claude-sonnet-4-6' (ai-tech e
-//     brand-mob) — mascarado hoje porque agents.model tem prioridade, mas
+//     brand-assets) — mascarado hoje porque agents.model tem prioridade, mas
 //     quebraria assim que essa coluna fosse limpa
 // Fix: getModel()/getModelViaOpenRouter() também resolvem pelo raw modelId
 // (alias reverso), então qualquer valor já gravado no banco nesse formato

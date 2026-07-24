@@ -93,18 +93,12 @@ export async function POST(req: NextRequest) {
     routes.set(igId, pickBestWorkspace(routes.get(igId), ws))
   }
 
-  // Forward de contas fora do V3.1 → webhook do BRAND.
-  // O app IG "Social Machine" é compartilhado (thedoomguy_ai/brand no V3.1,
-  // brand.ia.br/brand.live no projeto BRAND) e a Meta só permite UM callback por app.
-  // Este endpoint é esse callback; qualquer entry.id que não seja workspace do V3.1
-  // é repassado cru (mesmo body + assinatura) para a função instagram-webhook-en do
-  // BRAND, que valida a MESMA X-Hub-Signature-256 (mesmo INSTAGRAM_APP_SECRET) e
-  // roteia/enfileira no banco do BRAND. Fire-and-forget: não afeta o fluxo do V3.1.
+  // Optionally forward entries that do not belong to a local workspace.
+  // No destination is bundled with the public template.
   const foreignEntryIds = [...entryIds].filter((id): id is string => !!id && !routes.has(id))
-  if (foreignEntryIds.length > 0) {
-    const brandWebhookUrl = process.env.BRAND_IG_WEBHOOK_URL
-      ?? 'https://isjsokhrfwzlafpuirvp.supabase.co/functions/v1/instagram-webhook-en'
-    fetch(brandWebhookUrl, {
+  const fallbackWebhookUrl = process.env.INSTAGRAM_FALLBACK_WEBHOOK_URL
+  if (foreignEntryIds.length > 0 && fallbackWebhookUrl) {
+    fetch(fallbackWebhookUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -42,18 +42,15 @@ export async function GET(request: Request) {
 }
 
 async function _run(_request: Request) {
-  // A3 (pause week) foi REMOVIDO em 04/07/2026 por decisão do usuário: pausa
-  // cega de 1 semana a cada 13, sem evidência de benefício, violava a cota
-  // mínima de publicação e mascarou o outage do DoomGuyFrame (28/06–04/07).
-  // O risco real de queda de alcance é coberto pelo C1 (reach-trend monitor),
-  // que pausa 48h baseado em DADO, não em calendário. Tripwire em
-  // anti-shadowban-phase3.regression.test.ts impede reintrodução.
+  // Reach-based pauses are handled by the C1 monitor instead of a fixed
+  // calendar pause. See anti-shadowban-phase3.regression.test.ts.
 
   const aiKeywordsPattern = await getVariable(WORKSPACE_ID, 'ai_keywords_pattern')
   const minRelevanceScore = await getNumericVariable(WORKSPACE_ID, 'reel_min_relevance_score')
   const lookbackHours = await getNumericVariable(WORKSPACE_ID, 'reel_lookback_hours')
   const candidateLimit = await getNumericVariable(WORKSPACE_ID, 'reel_candidate_limit')
   const instagramHandle = await getVariable(WORKSPACE_ID, 'instagram_handle')
+  const twitterHandle = await getVariable(WORKSPACE_ID, 'twitter_handle')
   const referenceStyleAccount = await getVariable(WORKSPACE_ID, 'reference_style_account')
   const reelPrepModel = await getVariable(WORKSPACE_ID, 'reel_prep_model')
   const reelPrepMaxTokens = await getNumericVariable(WORKSPACE_ID, 'reel_prep_max_tokens')
@@ -373,7 +370,7 @@ REGRAS DA CAPTION:
 - CTA de engajamento: "Salva esse post", "Comenta LINK", pergunta polemica
 - FECHAMENTO OBRIGATORIO — CTA de SEGUIR ${instagramHandle}: termine a caption convidando a pessoa a seguir, usando ESTE ANGULO especifico: "${followCta.angle}"
   REGRAS do CTA de seguir: dê uma RAZAO concreta pra seguir (nunca "siga pra mais conteudo" generico); soe natural, na voz do perfil; 1-2 frases; inclua "${instagramHandle}".
-- DEPOIS do CTA de seguir, incluir: "Acompanhe tambem no X/Twitter: x.com/thedoomguy_ai"
+- DEPOIS do CTA de seguir, incluir: "Acompanhe tambem no X/Twitter: x.com/${twitterHandle}"
 - 5-8 hashtags estrategicas (mix de grandes + nicho)
 - Minimo 150 palavras na caption (captions longas performam melhor no IG)
 - PROIBIDO: bullet points, listas secas, emojis excessivos, tom de press release, frases de bot
@@ -576,7 +573,9 @@ async function sendFirstImageNotificationEmail(
   prompt: string,
 ): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY
-  if (!apiKey) return
+  const recipient = process.env.NOTIFICATION_EMAIL
+  const from = process.env.RESEND_FROM_EMAIL
+  if (!apiKey || !recipient || !from) return
 
   const FLAG_KEY = 'image_first_notification_sent'
 
@@ -599,7 +598,6 @@ async function sendFirstImageNotificationEmail(
   })
 
   if (insertErr) return // concurrent run already inserted
-  if (insertErr) return
 
 
   const { data: ws } = await supabase.from('workspaces').select('name').eq('id', workspaceId).single()
@@ -610,8 +608,8 @@ async function sendFirstImageNotificationEmail(
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     signal: AbortSignal.timeout(10_000),
     body: JSON.stringify({
-      from: 'noreply@lfrprojects.com.br',
-      to: ['luisroquette@gmail.com'],
+      from,
+      to: [recipient],
       subject: `[Social Machine] 1ª imagem gerada — ${projectName}`,
       html: `
         <div style="font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto;padding:24px;">

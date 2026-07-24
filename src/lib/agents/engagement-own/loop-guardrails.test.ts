@@ -9,8 +9,8 @@ import {
 
 describe('engagement-own loop guardrails', () => {
   it('normaliza listas de handles para owned/known agents', () => {
-    const handles = parseHandleList('@TheDoomGuy_AI, example_handle', ' @bot_lab ')
-    expect(Array.from(handles).sort()).toEqual(['bot_lab', 'example_handle', 'thedoomguy_ai'])
+    const handles = parseHandleList('@Your_AI_Profile, example_handle', ' @bot_lab ')
+    expect(Array.from(handles).sort()).toEqual(['bot_lab', 'example_handle', 'your_ai_profile'])
   })
 
   it('usa conversation_id como thread_id quando disponivel', () => {
@@ -23,7 +23,7 @@ describe('engagement-own loop guardrails', () => {
 
   it('bloqueia cross-talk same-owner com alternancia curta e sem terceiros', () => {
     const memory = buildThreadMemory({
-      ownHandle: 'thedoomguy_ai',
+      ownHandle: 'your_ai_profile',
       replyAuthor: 'example_handle',
       currentReplyId: '333',
       threadId: 'conv-333',
@@ -52,7 +52,7 @@ describe('engagement-own loop guardrails', () => {
       memory,
       novelty,
       counterpartyHandle: 'example_handle',
-      ownedHandles: parseHandleList('thedoomguy_ai,example_handle'),
+      ownedHandles: parseHandleList('your_ai_profile,example_handle'),
       knownAgentHandles: new Set<string>(),
     })
 
@@ -63,12 +63,12 @@ describe('engagement-own loop guardrails', () => {
 
   it('bloqueia same-owner logo no primeiro reply, sem depender de alternancia', () => {
     const memory = buildThreadMemory({
-      ownHandle: 'thedoomguy_ai',
-      replyAuthor: 'luisroquette',
+      ownHandle: 'your_ai_profile',
+      replyAuthor: 'example_owner',
       currentReplyId: 'first-touch',
       threadId: 'conv-first-touch',
       recentReplies: [
-        { id: 'first-touch', author: 'luisroquette', text: 'Discordo desse ponto', createdAt: '2026-07-06T12:00:00.000Z', threadId: 'conv-first-touch' },
+        { id: 'first-touch', author: 'example_owner', text: 'Discordo desse ponto', createdAt: '2026-07-06T12:00:00.000Z', threadId: 'conv-first-touch' },
       ],
       recentPairActions: [],
     })
@@ -82,8 +82,8 @@ describe('engagement-own loop guardrails', () => {
     const decision = decideGuardrailAction({
       memory,
       novelty,
-      counterpartyHandle: 'luisroquette',
-      ownedHandles: parseHandleList('thedoomguy_ai,luisroquette,example_handle'),
+      counterpartyHandle: 'example_owner',
+      ownedHandles: parseHandleList('your_ai_profile,example_owner,example_handle'),
       knownAgentHandles: new Set<string>(),
     })
 
@@ -93,7 +93,7 @@ describe('engagement-own loop guardrails', () => {
 
   it('exige novelty forte quando loop score entra em risco medio', () => {
     const memory = buildThreadMemory({
-      ownHandle: 'thedoomguy_ai',
+      ownHandle: 'your_ai_profile',
       replyAuthor: 'usuario_recorrente',
       currentReplyId: '444',
       threadId: 'conv-444',
@@ -132,7 +132,7 @@ describe('engagement-own loop guardrails', () => {
       memory,
       novelty,
       counterpartyHandle: 'usuario_recorrente',
-      ownedHandles: parseHandleList('thedoomguy_ai'),
+      ownedHandles: parseHandleList('your_ai_profile'),
       knownAgentHandles: new Set<string>(),
     })
 
@@ -142,7 +142,7 @@ describe('engagement-own loop guardrails', () => {
 
   it('entra em cooldown quando ha looping acelerado e baixa novidade recorrente', () => {
     const memory = buildThreadMemory({
-      ownHandle: 'thedoomguy_ai',
+      ownHandle: 'your_ai_profile',
       replyAuthor: 'research_bot',
       currentReplyId: '666',
       threadId: 'conv-666',
@@ -187,7 +187,7 @@ describe('engagement-own loop guardrails', () => {
       memory,
       novelty,
       counterpartyHandle: 'research_bot',
-      ownedHandles: parseHandleList('thedoomguy_ai'),
+      ownedHandles: parseHandleList('your_ai_profile'),
       knownAgentHandles: parseHandleList('research_bot'),
     })
 
@@ -197,7 +197,7 @@ describe('engagement-own loop guardrails', () => {
 
   it('isola duas threads diferentes do mesmo perfil', () => {
     const memory = buildThreadMemory({
-      ownHandle: 'thedoomguy_ai',
+      ownHandle: 'your_ai_profile',
       replyAuthor: 'mesmo_autor',
       currentReplyId: 'thread-b-2',
       threadId: 'thread-b',

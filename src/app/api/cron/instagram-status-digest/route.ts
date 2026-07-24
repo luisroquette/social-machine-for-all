@@ -7,7 +7,7 @@ import { getVariable } from '@/lib/settings/load-settings'
 import { sendReportEmail } from '@/lib/export/report-email'
 import { hoursSince, isInstagramStale } from '@/lib/monitoring/instagram-freshness'
 
-const ALERT_EMAIL = 'lfrprojects.ai@gmail.com'
+const ALERT_EMAIL = process.env.NOTIFICATION_EMAIL?.trim() ?? ''
 const STALE_HOURS = 24
 
 const WORKSPACES = [WORKSPACE_ID, process.env.SECONDARY_WORKSPACE_ID?.trim()].filter((id): id is string => Boolean(id))
@@ -62,7 +62,7 @@ export async function GET(request: Request) {
 
   const staleResults = results.filter(r => r.stale)
 
-  if (staleResults.length > 0) {
+  if (staleResults.length > 0 && ALERT_EMAIL) {
     const timestamp = new Date(now).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' })
     const lines = staleResults.map(r => {
       const detail = r.hoursSinceLastPublish === null

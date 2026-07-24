@@ -98,7 +98,7 @@ const BRAND_REEL_KEYWORDS = [
   'tecnologia limpa', 'sustentabilidade', 'sustentável', 'sustentavel',
   'rede elétrica', 'rede eletrica', 'rede inteligente', 'smart grid brasil',
   // ── PT/BR — marcas / empresas ─────────────────────────────────────────────
-  'brand mob', 'brand', 'byd brasil', 'tesla brasil', 'intelbras',
+  'your brand', 'byd brasil', 'tesla brasil', 'intelbras',
   'weg energia', 'emob', 'abve', 'abee', 'abeev',
   // ── B2B EV — condomínios, shoppings, postos ────────────────────────────────
   'ev charging condominium', 'ev charging parking', 'ev charging shopping',
@@ -139,7 +139,7 @@ export const BRAND_COMPETITOR_ACCOUNTS = [
 ]
 
 // CTA content patterns — posts that offer a distributable resource in exchange for a comment/DM.
-// Used by Optimization 11 to surface this content type for @thedoomguy_ai (AI&Tech workspace).
+// Used by Optimization 11 to surface this content type for @your_ai_profile (AI&Tech workspace).
 // The writer then has a 1-in-4 chance to close with "Comente [PALAVRA] aqui que te mando o link via DM."
 export const CTA_BOOST_PATTERNS = [
   'comente', 'comment below', 'comment and', 'reply with', 'reply and',
@@ -1063,10 +1063,10 @@ class CuratorAgent extends BaseAgent {
                   const videoBuffer = Buffer.from(await videoRes.arrayBuffer())
                   const storedPath = `videos/${tweetId}.mp4`
                   const { error: uploadErr } = await supabase.storage
-                    .from('brand-mob')
+                    .from('brand-assets')
                     .upload(storedPath, videoBuffer, { contentType: 'video/mp4', upsert: true })
                   if (uploadErr) { console.error(`[curator] Video upload failed ${tweetId}:`, uploadErr.message); return }
-                  const storedVideoUrl = supabase.storage.from('brand-mob').getPublicUrl(storedPath).data.publicUrl
+                  const storedVideoUrl = supabase.storage.from('brand-assets').getPublicUrl(storedPath).data.publicUrl
                   await supabase.from('curated_content')
                     .update({ source_metrics: { ...(sm as object), stored_video_url: storedVideoUrl } })
                     .eq('workspace_id', ctx.workspaceId)
@@ -1091,10 +1091,10 @@ class CuratorAgent extends BaseAgent {
                 const videoBuffer = Buffer.from(await videoRes.arrayBuffer())
                 const storedPath = `videos/ig-${mediaId}.mp4`
                 const { error: uploadErr } = await supabase.storage
-                  .from('brand-mob')
+                  .from('brand-assets')
                   .upload(storedPath, videoBuffer, { contentType: 'video/mp4', upsert: true })
                 if (uploadErr) { console.error(`[curator] IG video upload failed ${mediaId}:`, uploadErr.message); return }
-                const storedVideoUrl = supabase.storage.from('brand-mob').getPublicUrl(storedPath).data.publicUrl
+                const storedVideoUrl = supabase.storage.from('brand-assets').getPublicUrl(storedPath).data.publicUrl
                 await supabase.from('curated_content')
                   .update({ source_metrics: { ...(sm as object), stored_video_url: storedVideoUrl } })
                   .eq('workspace_id', ctx.workspaceId)

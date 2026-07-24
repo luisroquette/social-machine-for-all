@@ -90,7 +90,7 @@ export function parseFeed(xml: string, feedTitle: string, maxItems = 10): RssIte
 export async function fetchRssFeed(url: string, feedTitle: string, maxItems = 10): Promise<RssItem[]> {
   try {
     const res = await fetch(url, {
-      headers: { 'User-Agent': 'SocialMachine/3.1 RSS reader (+https://brand.com.br)' },
+      headers: { 'User-Agent': 'SocialMachine/3.1 RSS reader (+https://your-company.example)' },
       signal: AbortSignal.timeout(10_000),
     })
     if (!res.ok) return []

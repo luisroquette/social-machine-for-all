@@ -81,12 +81,12 @@ export default function TermsPage() {
       <section style={{ marginBottom: 48 }}>
         <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 12 }}>7. Contato</h2>
         <p>
-          <a href="mailto:contato@brand.com.br" style={{ color: '#8B35FF' }}>
-            contato@brand.com.br
+          <a href="mailto:contato@your-company.example" style={{ color: '#8B35FF' }}>
+            contato@your-company.example
           </a>
           <br />
-          <a href="https://brand.com.br" style={{ color: '#8B35FF' }}>
-            brand.com.br
+          <a href="https://your-company.example" style={{ color: '#8B35FF' }}>
+            your-company.example
           </a>
         </p>
       </section>

@@ -9,10 +9,11 @@ const HEIGHT = 1920  // 9:16 Reels
 const PAD    = 54
 const CONTENT_W = WIDTH - PAD * 2  // 972px
 
-// ── Brand Colors — @inteligencia.artificial.brazil ───────────────────────────
+// ── Default editorial palette ────────────────────────────────────────────────
 const ACCENT    = '#dc2626'                // red — highlight de marcas/produtos
 const BG_BASE   = '#0a0a0a'               // background base fallback
 const WATERMARK = 'rgba(255,255,255,0.45)'
+const BRAND_LOGO_URL = process.env.BRAND_LOGO_URL ?? ''
 
 // ── Fonts ────────────────────────────────────────────────────────────────────
 const ANTON_URL = 'https://github.com/google/fonts/raw/main/ofl/anton/Anton-Regular.ttf'
@@ -275,18 +276,21 @@ export async function GET(req: NextRequest) {
             padding: '10px 28px 10px 10px',
           }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="https://aosyonzvesotxppazugc.supabase.co/storage/v1/object/public/reels/brand/logo.jpg"
-            width={90}
-            height={90}
-            style={{
-              width: '90px',
-              height: '90px',
-              borderRadius: '50%',
-              objectFit: 'cover',
-            }}
-          />
+          {BRAND_LOGO_URL && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={BRAND_LOGO_URL}
+              alt=""
+              width={90}
+              height={90}
+              style={{
+                width: '90px',
+                height: '90px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+              }}
+            />
+          )}
           <span style={{ fontSize: 28, color: '#FFFFFF', letterSpacing: 2, fontFamily: 'Anton' }}>
             IA BRAZIL
           </span>
@@ -368,7 +372,7 @@ export async function GET(req: NextRequest) {
             letterSpacing: 1,
           }}
         >
-          @inteligencia.artificial.brazil
+          @your_brand
         </div>
       </div>
     ),

@@ -27,6 +27,11 @@ if git grep -nEI -- ':!package-lock.json' \
   report 'possible secret found in tracked content'
 fi
 
+if git grep -nEI -- ':!package-lock.json' ':!.env.example' \
+  'https://[a-z0-9]{20}\.supabase\.co' >/dev/null; then
+  report 'concrete Supabase project URL found in tracked content'
+fi
+
 if [ "$fail" -ne 0 ]; then
   exit 1
 fi

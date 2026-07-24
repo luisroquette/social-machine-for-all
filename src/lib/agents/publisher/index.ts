@@ -539,7 +539,7 @@ async function renderWithRemotion(composition: string, inputProps: Record<string
  *
  * 1. Generate photorealistic background via OpenAI Images
  * 2. Render final cover with Remotion Lambda (CoverImage composition)
- *    — Doomguy logo, Impact font title, purple highlights
+ *    — Editorial logo, Impact font title, purple highlights
  */
 async function generateReelCover(
   hookTitle: string,
@@ -563,7 +563,7 @@ async function generateReelCover(
       body: JSON.stringify({
         hookTitle,
         highlightName,
-        handle: handle || '@inteligencia.artificial.brazil',
+        handle: handle || '@your_brand',
         topic: topic || hookTitle,
       }),
       // Had no timeout at all before — a hung Railway call could block indefinitely,
@@ -606,7 +606,7 @@ async function generateReelCover(
         title: hookTitle,
         highlightWords,
         subtitle: '',
-        handle: handle || '@inteligencia.artificial.brazil',
+        handle: handle || '@your_brand',
       },
       imageFormat: 'jpeg',
       privacy: 'public',

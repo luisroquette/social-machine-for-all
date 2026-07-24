@@ -12,7 +12,7 @@ import { getAdminClient } from '@/lib/supabase/admin'
 import { getBaseUrl } from '@/lib/api/base-url'
 import { callOpenRouterImage } from './openrouter'
 
-const BUCKET = 'brand-mob'
+const BUCKET = 'brand-assets'
 const GEMINI_IMAGE_MODEL = 'gemini-3.1-flash-image'
 
 async function generateBackground(prompt: string): Promise<Buffer | null> {

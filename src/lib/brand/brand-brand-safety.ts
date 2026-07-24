@@ -2,8 +2,7 @@
 //
 // Conteúdo que associa veículo elétrico a perigo (incêndio, explosão, acidente,
 // recall, morte) afasta exatamente o público que compra: gestores de frota,
-// síndicos e empresas avaliando eletrificação. Origem: Reel "11 EVS EM CHAMAS"
-// (BYDs incendiados na BR-101) publicado em 07/07/2026 e reprovado pelo usuário.
+// síndicos e empresas avaliando eletrificação.
 // Nem reenquadramento positivo salva — o lead lê a manchete, não a ressalva.
 //
 // Usado em DUAS camadas: curadoria (isTopicRelevant, entrada) e reviewer

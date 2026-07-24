@@ -128,7 +128,7 @@ describe('REGRESSÃO: isTopicRelevant — brandmob chinese wall (bug 2026-06-05)
     expect(isTopicRelevant(text, EV_FEATURE_ENABLED)).toBe(true)
   })
 
-  it('Conteúdo de IA tech é APROVADO para workspace AI&Tech (não afeta @thedoomguy_ai)', () => {
+  it('Conteúdo de IA tech é APROVADO para workspace AI&Tech (não afeta @your_ai_profile)', () => {
     const text = 'Microsoft Copilot Autopilot agents rodam autonomamente. Claude AI supera GPT-4 em benchmarks.'
     expect(isTopicRelevant(text, EV_FEATURE_DISABLED)).toBe(true)
   })

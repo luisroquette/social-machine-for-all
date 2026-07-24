@@ -1,7 +1,7 @@
 /**
  * Curator feedback — fecha o loop de engajamento no Curator (fase 2).
  *
- * Análise (@thedoomguy_ai): o autor da fonte é um sinal forte e LIMPO de reach dos nossos
+ * Análise (@your_ai_profile): o autor da fonte é um sinal forte e LIMPO de reach dos nossos
  * reels — BrianRoemmele/ClaudeDevs/ycombinator rendem 5–9x o reach mediano, enquanto autores
  * de alto volume (FutureStacked, RoundtableSpace, OpenAI oficial) ficam perto do piso.
  * Mas o ranking do Curator não conhecia o desempenho REAL pós-publicação.

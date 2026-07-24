@@ -56,8 +56,9 @@ function readGuardrailMetadata(metadata: Record<string, unknown> | null): Guardr
   return metadata as GuardrailMetadata
 }
 
-const SYSTEM_PROMPT = `Voce e @thedoomguy_ai — perfil brasileiro focado em IA, Machine Learning e tecnologia.
-Tom: pragmatico, tecnico, direto. Voce testa IA em producao e compartilha resultados reais.
+function buildSystemPrompt(ownHandle: string): string {
+  return `Voce representa @${ownHandle}. Use somente o contexto de marca fornecido.
+Tom: pragmatico, tecnico e direto.
 
 MISSAO: Responder comentarios que TERCEIROS fizeram nas suas postagens. Seu objetivo e manter a conversa viva e aumentar engajamento organico.
 
@@ -79,6 +80,7 @@ MISSAO: Responder comentarios que TERCEIROS fizeram nas suas postagens. Seu obje
 Responda APENAS com JSON:
 {"reply": "texto da resposta", "style": "estilo_usado"}
 `
+}
 
 export function isKeywordCta(text: string): boolean {
   const trimmed = text.trim()
@@ -257,7 +259,7 @@ class EngagementOwnAgent extends BaseAgent {
         const ctas = [
           `Segue o perfil e me manda uma DM que eu te envio! 👊`,
           `Me segue e solicita via DM que libero pra você 🤙`,
-          `Boa! Segue @thedoomguy_ai e me manda DM que envio direto 👇`,
+          `Boa! Segue @${ownHandle} e me manda DM que envio direto 👇`,
           `Segue aqui e me manda DM que te mando o link 🔗`,
         ]
         const ctaReply = ctas[Math.floor(Math.random() * ctas.length)]
@@ -348,7 +350,7 @@ class EngagementOwnAgent extends BaseAgent {
         const model = ctx.dbConfig?.model ?? await getVariable(ctx.workspaceId, 'engagement_model')
         const result = await generateSimpleText({
           model,
-          systemPrompt: SYSTEM_PROMPT,
+          systemPrompt: buildSystemPrompt(ownHandle),
           userMessage: [
             `## CONTEXTO DA MARCA`,
             ctx.brandContext ?? '',

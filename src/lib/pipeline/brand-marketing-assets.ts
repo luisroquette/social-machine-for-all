@@ -74,10 +74,10 @@ export async function publishMarketingAssetRow(
       const framePng = new Uint8Array(await frameRes.arrayBuffer())
       const framePath = `marketing-frames/${asset.id}.png`
       const { error: frameUpErr } = await supabase.storage
-        .from('brand-mob')
+        .from('brand-assets')
         .upload(framePath, framePng, { contentType: 'image/png', upsert: true })
       if (!frameUpErr) {
-        frameToPublish = supabase.storage.from('brand-mob').getPublicUrl(framePath).data.publicUrl
+        frameToPublish = supabase.storage.from('brand-assets').getPublicUrl(framePath).data.publicUrl
       }
     }
   } catch (err) {

@@ -1,7 +1,7 @@
 /**
  * REGRESSÃO: e-mails de relatório não identificavam sistema/workspace — bug 2026-07-06
  *
- * Contexto: o remetente noreply@lfrprojects.com.br é compartilhado com o
+ * Contexto: o remetente pode ser compartilhado com
  * Social Machine V2.1 e outros projetos. O usuário recebeu um alerta
  * "🔴 Social Machine — 1 alerta(s) crítico(s)" (heartbeat/route.ts, workspace
  * AI & Tech) misturado com alertas do V2.1 e não tinha como saber, olhando o
@@ -26,6 +26,7 @@ describe('REGRESSÃO: sendReportEmail identifica sistema + workspace no assunto 
     vi.clearAllMocks()
     sendMock.mockResolvedValue({ data: { id: 'email-123' }, error: null })
     process.env.RESEND_API_KEY = 'test-key'
+    process.env.RESEND_FROM_EMAIL = 'Social Machine <test@example.com>'
   })
 
   it('prefixa o assunto com [Sistema · Scope]', async () => {
@@ -62,10 +63,10 @@ describe('REGRESSÃO: sendReportEmail identifica sistema + workspace no assunto 
       to: 'test@example.com',
       subject: 'Instagram sem postagens',
       content: 'corpo',
-      label: { system: 'Social Machine V3.1', scope: '@thedoomguy_ai + @brand' },
+      label: { system: 'Social Machine V3.1', scope: '@your_ai_profile + @brand' },
     })
 
     const payload = sendMock.mock.calls[0][0]
-    expect(payload.subject).toContain('@thedoomguy_ai + @brand')
+    expect(payload.subject).toContain('@your_ai_profile + @brand')
   })
 })

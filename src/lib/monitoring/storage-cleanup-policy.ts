@@ -2,9 +2,8 @@
  * Política de retenção do cleanup-storage — extraída em módulo puro para ser
  * testável e para o cron não voltar a divergir do que existe de fato nos buckets.
  *
- * Contexto (jul/2026): o bucket 'reels' chegou a 13 GB porque o cron só limpava
- * downloads/ e covers/. As pastas de vídeo renderizado (capcut/, doomguy-frame/,
- * brand-frame/, brand-frame/) — metade do bucket — nunca eram tocadas, e o
+ * The cleanup covers source files and rendered outputs. Without pagination,
+ * older objects can remain invisible after the first page.
  * list() sem paginação (limit 500, ordenado por NOME) deixava arquivos antigos
  * permanentemente invisíveis para a limpeza.
  *
@@ -29,17 +28,16 @@ export const CLEANUP_TARGETS: ReadonlyArray<CleanupTarget> = [
   { bucket: 'reels', folder: 'covers', retentionDays: 30 },
   { bucket: 'reels', folder: 'subtitled', retentionDays: 7 },
   { bucket: 'reels', folder: 'renders', retentionDays: 7 },
-  { bucket: 'reels', folder: 'doomguy-frame', retentionDays: 14 },
+  { bucket: 'reels', folder: 'editorial-frame', retentionDays: 14 },
   { bucket: 'reels', folder: 'brand-frame', retentionDays: 14 },
-  { bucket: 'reels', folder: 'brand-frame', retentionDays: 14 },
-  // capcut/: pipeline morto desde 06/06/2026 (substituído pelo doomguy-frame).
+  // Legacy renderer output; retention 0 makes every dated object eligible.
   // retentionDays 0 = qualquer arquivo é elegível — a pasta esvazia e some.
   { bucket: 'reels', folder: 'capcut', retentionDays: 0 },
-  // bucket 'brand-mob' (workspace Brand) — não tinha limpeza nenhuma
-  { bucket: 'brand-mob', folder: 'backgrounds', retentionDays: 30 },
-  { bucket: 'brand-mob', folder: 'carousel', retentionDays: 30 },
-  { bucket: 'brand-mob', folder: 'posts', retentionDays: 30 },
-  { bucket: 'brand-mob', folder: 'reel-covers', retentionDays: 30 },
+  // Optional vertical assets.
+  { bucket: 'brand-assets', folder: 'backgrounds', retentionDays: 30 },
+  { bucket: 'brand-assets', folder: 'carousel', retentionDays: 30 },
+  { bucket: 'brand-assets', folder: 'posts', retentionDays: 30 },
+  { bucket: 'brand-assets', folder: 'reel-covers', retentionDays: 30 },
 ]
 
 /** Pastas que NUNCA podem entrar em limpeza (assets permanentes de marca). */

@@ -81,7 +81,7 @@ vi.mock('@/lib/supabase/admin', () => ({
 
 import { agent } from './index'
 
-const WORKSPACE_ID = 'workspace-doomguy-ai'
+const WORKSPACE_ID = 'workspace-example-ai'
 
 const makeCtx = (overrides = {}) => ({
   workspaceId: WORKSPACE_ID,

@@ -31,7 +31,7 @@ describe('evergreen_pillar_cursor setting', () => {
   it('owned_x_handles já nasce com aliases same-owner protegidos', async () => {
     const { getVariable } = await import('./load-settings')
     const value = await getVariable('11111111-1111-4111-8111-111111111111', 'owned_x_handles')
-    expect(value).toBe('luisroquette,example_handle')
+    expect(value).toBe('example_handle')
   })
 })
 

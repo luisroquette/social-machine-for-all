@@ -9,9 +9,9 @@ const HEIGHT = 1440  // 3:4 portrait — alinha exatamente com a grade do IG (3:
 const PAD    = 64
 
 // ── Brand Assets ─────────────────────────────────────────────────────────────
-const brand_LOGO_URL = 'https://aosyonzvesotxppazugc.supabase.co/storage/v1/object/public/brand-mob/brand/logo.png'
+const BRAND_LOGO_URL = process.env.BRAND_LOGO_URL ?? ''
 
-// ── Brand Colors — Brand (from brand.com.br globals.css) ───────────────
+// ── Brand Colors — Brand (from your-company.example globals.css) ───────────────
 const VIOLET   = '#8B35FF'  // hsl(267 100% 65%) — brand-violet
 const LAVENDER = '#C4A1FF'  // hsl(263 100% 83%) — brand-lavender
 const GOLD     = '#E8B84B'  // hsl(43 70% 69%)   — brand-gold
@@ -120,16 +120,18 @@ export async function GET(req: NextRequest) {
           >
             <div style={{ width: 12, height: 12, borderRadius: '50%', background: VIOLET, display: 'flex' }} />
             <span style={{ fontSize: 26, color: '#FFFFFF', letterSpacing: 2, fontWeight: 800 }}>
-              brand MOB
+              YOUR BRAND
             </span>
           </div>
-          {/* Logo */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={brand_LOGO_URL}
-            width={72} height={72}
-            style={{ width: '72px', height: '72px', objectFit: 'contain' }}
-          />
+          {BRAND_LOGO_URL && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={BRAND_LOGO_URL}
+              alt=""
+              width={72} height={72}
+              style={{ width: '72px', height: '72px', objectFit: 'contain' }}
+            />
+          )}
         </div>
 
         {/* ── Category pill — top right ────────────────────────────────── */}

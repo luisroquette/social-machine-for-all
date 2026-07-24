@@ -18,11 +18,11 @@ export interface VariableDefinition {
 
 export const VARIABLE_DEFINITIONS: VariableDefinition[] = [
   // ── Branding ──
-  { key: 'instagram_handle', category: 'branding', label: 'Instagram Handle', description: 'Handle principal do Instagram (com @)', type: 'string', defaultValue: '@inteligencia.artificial.brazil' },
+  { key: 'instagram_handle', category: 'branding', label: 'Instagram Handle', description: 'Handle principal do Instagram (com @)', type: 'string', defaultValue: '@your_brand' },
   { key: 'twitter_handle', category: 'branding', label: 'Twitter/X Handle', description: 'Handle principal do Twitter (sem @)', type: 'string', defaultValue: 'example_handle' },
-  { key: 'brand_name', category: 'branding', label: 'Nome da Marca', description: 'Nome exibido em conteúdos e referências', type: 'string', defaultValue: 'IA Brazil' },
+  { key: 'brand_name', category: 'branding', label: 'Nome da Marca', description: 'Nome exibido em conteúdos e referências', type: 'string', defaultValue: 'Your Brand' },
   { key: 'reference_style_account', category: 'branding', label: 'Conta de Referência', description: 'Conta usada como referência de estilo (ex: @uncover.ai)', type: 'string', defaultValue: '@uncover.ai' },
-  { key: 'owned_x_handles', category: 'branding', label: 'Owned X Handles', description: 'Lista CSV de handles do X controlados pela mesma operacao', type: 'string', defaultValue: 'luisroquette,example_handle' },
+  { key: 'owned_x_handles', category: 'branding', label: 'Owned X Handles', description: 'Lista CSV de handles do X controlados pela mesma operacao', type: 'string', defaultValue: 'example_handle' },
   { key: 'known_agent_x_handles', category: 'branding', label: 'Known Agent X Handles', description: 'Lista CSV de handles do X conhecidos como agentes automatizados', type: 'string', defaultValue: '' },
 
   // ── AI Models ──
@@ -184,8 +184,8 @@ const LEGACY_DEFAULTS: WorkspaceSettings = {
   tweet_max_length: 280,
   max_posts_per_run: 1,
   target_handle: 'example_handle',
-  instagram_handle: '@inteligencia.artificial.brazil',
-  own_twitter_handle: 'thedoomguy_ai',
+  instagram_handle: '@your_brand',
+  own_twitter_handle: 'your_brand',
   curator_banned_keywords: 'crypto,defi,blockchain,token,nft,trading,forex,mineracao,airdrop,wallet,altcoin,staking,ethereum,eth,btc,bitcoin,virtual protocol,depin,web3,solana,xrp,binance,coinbase,doge,shiba,hodl,memecoin',
   monitor_max_topics: 6,
   curator_max_posts_per_topic: 4,

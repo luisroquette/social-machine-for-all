@@ -23,3 +23,9 @@ Thanks for helping make the template useful for more teams.
 
 Do not open a public issue for a vulnerability or an exposed credential. Follow
 [SECURITY.md](SECURITY.md) instead.
+
+## Support expectations
+
+This is a free community project without guaranteed implementation support or
+response times. Issues and pull requests should contain enough context for
+another contributor to reproduce and evaluate the change.

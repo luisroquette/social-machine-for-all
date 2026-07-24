@@ -111,12 +111,12 @@ describe('engagement-external — same-owner and thread metadata guardrails', ()
     mockCuratedContent = []
     mockTodayCount = 0
     mockedLoadSettings.mockResolvedValue({
-      own_twitter_handle: 'thedoomguy_ai',
+      own_twitter_handle: 'your_ai_profile',
       target_handle: 'example_handle',
     } as Awaited<ReturnType<typeof loadSettings>>)
     mockedGetVariable.mockImplementation(async (_workspaceId: string, key: string) => {
       if (key === 'twitter_handle') return 'example_handle'
-      if (key === 'owned_x_handles') return 'luisroquette'
+      if (key === 'owned_x_handles') return 'example_owner'
       return 'deepseek-chat'
     })
     mockedGenerateSimpleText.mockResolvedValue({
@@ -128,7 +128,7 @@ describe('engagement-external — same-owner and thread metadata guardrails', ()
 
   it('bloqueia perfil same-owner antes de prospectar tweet', async () => {
     mockProfiles = [
-      { id: '1', handle: 'LuisRoquette', platform: 'x', config: null, last_engaged_at: null },
+      { id: '1', handle: 'example_owner', platform: 'x', config: null, last_engaged_at: null },
     ]
 
     const result = await agent.execute(makeCtx())
@@ -174,7 +174,7 @@ describe('engagement-external — same-owner and thread metadata guardrails', ()
     expect(payload.metadata.conversation_id).toBe('conv-777')
     expect(payload.metadata.thread_id).toBe('conv-777')
     expect(payload.metadata.target_tweet_id).toBe('777')
-    expect(payload.metadata.pair_id).toBe('thedoomguy_ai:usuario_externo')
+    expect(payload.metadata.pair_id).toBe('usuario_externo:your_ai_profile')
     expect((payload.metadata.guardrail as { version?: string }).version).toBe('v2')
   })
 })

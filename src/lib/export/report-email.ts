@@ -1,7 +1,6 @@
 /**
  * Send formatted HTML email reports via Resend.
- * Env: RESEND_API_KEY
- * From: noreply@lfrprojects.com.br
+ * Env: RESEND_API_KEY, RESEND_FROM_EMAIL
  */
 
 import { Resend } from 'resend'
@@ -113,11 +112,7 @@ function clean(text: string): string {
 }
 
 /**
- * Identifica de qual sistema/workspace um e-mail de relatório fala. Obrigatório
- * em todo envio — ver REGRESSÃO §multi-projeto 2026-07-06: o remetente
- * noreply@lfrprojects.com.br é compartilhado com o Social Machine V2.1 e
- * outros projetos, e nenhum e-mail deixava claro qual sistema/workspace
- * estava alertando.
+ * Identifica de qual sistema/workspace um e-mail de relatório fala.
  */
 export interface ReportEmailLabel {
   /** Ex: "Social Machine V3.1" */
@@ -136,6 +131,8 @@ export async function sendReportEmail(options: {
   label: ReportEmailLabel
   pdfAttachment?: { filename: string; buffer: Buffer }
 }): Promise<{ ok: boolean; id?: string; error?: string }> {
+  const from = process.env.RESEND_FROM_EMAIL
+  if (!from) return { ok: false, error: 'RESEND_FROM_EMAIL nao configurado' }
   const resend = getResend()
   const recipients = Array.isArray(options.to) ? options.to : [options.to]
   const taggedSubject = `[${options.label.system} · ${options.label.scope}] ${options.subject}`
@@ -151,7 +148,7 @@ export async function sendReportEmail(options: {
   `
 
   const payload: Parameters<typeof resend.emails.send>[0] = {
-    from: 'Social Machine <noreply@lfrprojects.com.br>',
+    from,
     to: recipients,
     subject: taggedSubject,
     html: htmlBody,

@@ -55,7 +55,7 @@ async function generateEditorialCover(params: {
       })
       ogPath = 'brand-reel-cover'
     } else {
-      // AI & Tech (@thedoomguy_ai): use red/editorial cover
+      // Use the generic editorial cover.
       qs = new URLSearchParams({
         title: params.hookTitle,
         highlight: params.highlightWords.join(','),
@@ -210,8 +210,9 @@ export async function GET(request: Request) {
   }
 
   // ── Load configurable values ──
-  const [instagramHandle, coverRenderTimeout, videoRenderTimeout, igPollInterval, igPollMaxAttempts] = await Promise.all([
+  const [instagramHandle, twitterHandle, coverRenderTimeout, videoRenderTimeout, igPollInterval, igPollMaxAttempts] = await Promise.all([
     getVariable(workspaceId, 'instagram_handle'),
+    getVariable(workspaceId, 'twitter_handle'),
     getNumericVariable(workspaceId, 'cover_render_timeout_ms'),
     getNumericVariable(workspaceId, 'video_render_timeout_ms'),
     getNumericVariable(workspaceId, 'ig_poll_interval_ms'),
@@ -247,10 +248,10 @@ export async function GET(request: Request) {
 
   const renderVideo = async (): Promise<string | null> => {
     if (!features.branded_reel_frame) {
-      // AI & Tech (@thedoomguy_ai): branded frame — landscape + portrait sized correctly,
+      // Generic editorial frame — landscape + portrait sized correctly,
       // header with logo/handle/category/title, karaoke subtitles in video slot.
       // Always render regardless of whether subtitles exist.
-      const res = await fetch(`${REEL_RENDERER_URL}/render/doomguy-frame`, {
+      const res = await fetch(`${REEL_RENDERER_URL}/render/editorial-frame`, {
         method: 'POST',
         signal: AbortSignal.timeout(videoRenderTimeout),
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${REEL_RENDERER_API_KEY}` },
@@ -265,7 +266,7 @@ export async function GET(request: Request) {
           highlightWords: reelData.highlightWords ?? [],
         }),
       })
-      if (!res.ok) throw new Error(`DoomGuyFrame: ${res.status}`)
+      if (!res.ok) throw new Error(`EditorialFrame: ${res.status}`)
       const r = await res.json() as { url: string }
       return r.url
     }
@@ -314,12 +315,12 @@ export async function GET(request: Request) {
     const capErr = videoResult.reason?.message || String(videoResult.reason)
     console.error('[reels-publish] Video render failed:', capErr)
     if (!features.branded_reel_frame) {
-      // AI & Tech: doomguy-frame always renders — if it fails the source format is unknown.
+      // The editorial frame always renders; if it fails the source format is unknown.
       // Never send raw video to Instagram; it could be landscape → infinite IN_PROGRESS polling.
       await supabase.from('generated_content')
-        .update({ status: 'failed', review_feedback: `doomguy_frame_failed: ${capErr.slice(0, 200)}` })
+        .update({ status: 'failed', review_feedback: `editorial_frame_failed: ${capErr.slice(0, 200)}` })
         .eq('id', item.id)
-      return NextResponse.json({ ok: false, error: 'doomguy_frame_failed', detail: capErr.slice(0, 200) })
+      return NextResponse.json({ ok: false, error: 'editorial_frame_failed', detail: capErr.slice(0, 200) })
     }
     // Brand: brand-frame always renders — if it fails the source format is unknown.
     await supabase.from('generated_content')
@@ -553,28 +554,37 @@ export async function GET(request: Request) {
     }
   } catch { /* C1 is non-critical */ }
 
-  // ── Cross-post to Twitter — AI & Tech only (@thedoomguy_ai has X; Brand does not) ──
+  const cleanInstagramHandle = instagramHandle.replace(/^@/, '')
+  const cleanTwitterHandle = twitterHandle.replace(/^@/, '')
+
+  // ── Optional cross-post to Twitter/X ──
   let tweetId: string | null = null
   if (features.reel_crossposting) {
     try {
       const { XClient } = await import('@/lib/platforms/x/client')
       const xClient = XClient.fromEnv()
-      const captionClean = reelData.caption.replace(/#\w+\s*/g, '').replace(/@thedoomguy_ia|@inteligencia\.artificial\.brazil/gi, '').trim()
-      const tweetText = captionClean.slice(0, 220) + `\n\n📲 Siga no Instagram: instagram.com/inteligencia.artificial.brazil`
+      const captionClean = reelData.caption.replace(/#\w+\s*/g, '').trim()
+      const instagramLine = cleanInstagramHandle
+        ? `\n\n📲 Instagram: instagram.com/${cleanInstagramHandle}`
+        : ''
+      const tweetText = captionClean.slice(0, 220) + instagramLine
       const xResult = await xClient.publishWithVideo(tweetText, renderedVideoUrl)
       tweetId = xResult.postId || null
     } catch { /* best effort */ }
   }
 
-  // ── Cross-post to YouTube Shorts — AI & Tech only (Brand has no YouTube channel) ──
+  // ── Optional cross-post to YouTube Shorts ──
   let youtubeId: string | null = null
   if (features.reel_crossposting) {
     try {
       const { YouTubeClient } = await import('@/lib/platforms/youtube/client')
       const ytClient = YouTubeClient.fromEnv()
-      const ytDescription = reelData.caption.replace(/@thedoomguy_ia|@inteligencia\.artificial\.brazil/gi, '@inteligencia.artificial.brazil').trim()
-        + `\n\n📲 Instagram: https://instagram.com/inteligencia.artificial.brazil`
-        + `\n🐦 Twitter/X: https://x.com/thedoomguy_ai`
+      const socialLinks = [
+        cleanInstagramHandle ? `📲 Instagram: https://instagram.com/${cleanInstagramHandle}` : '',
+        cleanTwitterHandle ? `🐦 Twitter/X: https://x.com/${cleanTwitterHandle}` : '',
+      ].filter(Boolean).join('\n')
+      const ytDescription = reelData.caption.trim()
+        + (socialLinks ? `\n\n${socialLinks}` : '')
       const ytTags = ['IA', 'inteligencia artificial', 'AI', 'tecnologia', 'tech', 'machine learning']
       const ytResult = await ytClient.publishShort(reelData.hookTitle, ytDescription, renderedVideoUrl, ytTags)
       youtubeId = ytResult.videoId || null

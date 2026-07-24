@@ -3,7 +3,7 @@
  *
  * Por que este teste existe:
  * Em Abr/2026, o agente engagement-own começou a responder os próprios posts do
- * @thedoomguy_ai como se fossem comentários de terceiros.
+ * @your_ai_profile como se fossem comentários de terceiros.
  * A causa: o filtro `-from:handle` da API do Twitter pode falhar quando `ownHandle`
  * inclui `@` no valor — e não havia verificação em código.
  *
@@ -82,7 +82,7 @@ const mockedLoadSettings = vi.mocked(loadSettings)
 const mockedGetVariable = vi.mocked(getVariable)
 const mockedGenerateSimpleText = vi.mocked(generateSimpleText)
 
-const OWN_HANDLE = 'thedoomguy_ai'
+const OWN_HANDLE = 'your_ai_profile'
 const WORKSPACE_ID = '11111111-1111-4111-8111-111111111111'
 
 function makeCtx(): Parameters<typeof agent.execute>[0] {
@@ -117,7 +117,7 @@ describe('engagement-own — guardrail anti-self-engagement', () => {
     mockedLoadSettings.mockResolvedValue({ own_twitter_handle: OWN_HANDLE, target_handle: 'example_handle' } as Awaited<ReturnType<typeof loadSettings>>)
     mockedGetVariable.mockImplementation(async (_workspaceId: string, key: string) => {
       if (key === 'twitter_handle') return 'example_handle'
-      if (key === 'owned_x_handles') return ''
+      if (key === 'owned_x_handles') return 'example_owner'
       if (key === 'known_agent_x_handles') return ''
       return 'deepseek-chat'
     })
@@ -165,7 +165,7 @@ describe('engagement-own — guardrail anti-self-engagement', () => {
 
   it('REGRESSÃO: não insere com handle em maiúsculas (case-insensitive)', async () => {
     mockedSearchTweetsIO.mockResolvedValue([
-      makeTweet('TheDoomGuy_AI', '666'),
+      makeTweet('Your_AI_Profile', '666'),
     ])
 
     await agent.execute(makeCtx())
@@ -225,15 +225,15 @@ describe('engagement-own — guardrail anti-self-engagement', () => {
     expect(insertUrls.some(url => url.includes(`/${OWN_HANDLE}/`))).toBe(false)
   })
 
-  it('REGRESSÃO: não responde alias same-owner @luisroquette mesmo sem alternância prévia', async () => {
+  it('REGRESSÃO: não responde alias same-owner @example_owner mesmo sem alternância prévia', async () => {
     mockedGetVariable.mockImplementation(async (_workspaceId: string, key: string) => {
       if (key === 'twitter_handle') return 'example_handle'
-      if (key === 'owned_x_handles') return ''
+      if (key === 'owned_x_handles') return 'example_owner'
       if (key === 'known_agent_x_handles') return ''
       return 'deepseek-chat'
     })
     mockedSearchTweetsIO.mockResolvedValue([
-      makeTweet('luisroquette', '1010'),
+      makeTweet('example_owner', '1010'),
     ])
 
     await agent.execute(makeCtx())
