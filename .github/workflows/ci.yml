@@ -30,7 +30,7 @@ jobs:
 
       - run: npm ci
       - run: npm run audit:public-release
-      - run: npm audit
+      - run: npm run audit:runtime
       - run: npm run lint
       - run: npm test
       - run: npm run build
