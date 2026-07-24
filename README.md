@@ -4,6 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/luisroquette/social-machine-for-all/actions/workflows/ci.yml"><img src="https://github.com/luisroquette/social-machine-for-all/actions/workflows/ci.yml/badge.svg" alt="CI status" /></a>
+  <a href="https://github.com/luisroquette/RocketLabs"><img src="https://img.shields.io/badge/RocketLabs-open%20system-7C5CFC?style=flat-square" alt="Part of RocketLabs" /></a>
   <a href="https://github.com/luisroquette/social-machine-for-all/releases/latest"><img src="https://img.shields.io/github/v/release/luisroquette/social-machine-for-all?style=flat-square&color=52E0B3" alt="Latest release" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-52E0B3?style=flat-square" alt="MIT License" /></a>
   <img src="https://img.shields.io/badge/node-%3E%3D20.9-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js 20.9 or newer" />
@@ -376,3 +377,10 @@ account handles or workspace IDs.
 MIT — use it, adapt it and build the content operation your company needs.
 
 If Social Machine helps your team, star the repository and share what you build.
+
+---
+
+<p align="center">
+  <strong>Social Machine for All is part of <a href="https://github.com/luisroquette/RocketLabs">RocketLabs</a>.</strong><br />
+  <sub>Explore more applied AI systems and reusable open-source playbooks.</sub>
+</p>
