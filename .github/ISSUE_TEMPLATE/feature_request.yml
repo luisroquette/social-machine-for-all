@@ -1,0 +1,22 @@
+name: Feature request
+description: Suggest a reusable improvement for every self-hosted workspace.
+title: "feature: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed approach
+      description: Explain how it stays optional and brand-neutral.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

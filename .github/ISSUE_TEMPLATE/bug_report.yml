@@ -1,0 +1,32 @@
+name: Bug report
+description: Help us reproduce and fix a problem in the public template.
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Please remove credentials, account handles, workspace IDs and private content before posting."
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: How can we reproduce it?
+      description: Include safe, minimal steps.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Safety check
+      options:
+        - label: I removed secrets and private customer data.
+          required: true
