@@ -1,62 +1,123 @@
-# Social Machine for All
+<p align="center">
+  <img src="assets/social-machine-workflow.svg" alt="Social Machine workflow: discover, curate, create, review and learn" width="100%" />
+</p>
 
-> Your company’s self-hosted content operating system — discover ideas, create
-> better posts, review them, and publish with your rules in control.
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-52E0B3?style=flat-square" alt="MIT License" /></a>
+  <img src="https://img.shields.io/badge/self--hosted-your%20data-70B7FF?style=flat-square" alt="Self-hosted" />
+  <img src="https://img.shields.io/badge/approval--first-by%20default-AE95FF?style=flat-square" alt="Approval first" />
+  <img src="https://img.shields.io/badge/stack-Next.js%20%2B%20Supabase-111827?style=flat-square" alt="Next.js and Supabase" />
+</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e.svg)](LICENSE)
-[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-self--hosted%20data-3ecf8e)](https://supabase.com/)
+<h1 align="center">Social Machine for All</h1>
 
-Social Machine for All is an open-source, self-hosted workspace for teams that
-want a repeatable content engine without handing their brand, accounts, or data
-to a black box. Start with approval-first workflows; turn on automation only
-when your process is ready.
+<p align="center"><strong>Turn content operations into a system your team actually controls.</strong></p>
 
-**Bring your own brand. Bring your own accounts. Keep control.**
+<p align="center">
+  Discover relevant signals, turn them into on-brand drafts, review with confidence,
+  publish deliberately and learn from the result — all inside your own deployment.
+</p>
 
-## Why use it?
+<p align="center">
+  <a href="#start-in-10-minutes"><strong>Get started</strong></a> ·
+  <a href="#how-it-works"><strong>See the workflow</strong></a> ·
+  <a href="#what-you-control"><strong>What you control</strong></a> ·
+  <a href="CONTRIBUTING.md"><strong>Contribute</strong></a>
+</p>
 
-Most content tools solve one isolated step: ideas, writing, scheduling, or
-analytics. Social Machine connects the workflow without forcing a one-size-fits-all
-editorial voice.
+---
 
-| Instead of… | You get… |
+## The idea in 30 seconds
+
+Content teams do not need another prompt box. They need a repeatable operating
+loop: **signals in, decisions visible, quality protected, learning retained**.
+
+Social Machine is an open-source, self-hosted workspace that connects that loop.
+It starts safely with human approval. When your process is ready, you can turn on
+the integrations and automations that make sense for your company.
+
+> Your data, credentials, editorial rules and publishing decisions stay in your
+> infrastructure. There is no bundled customer, account or hidden workspace.
+
+## Table of contents
+
+- [Who this is for](#who-this-is-for)
+- [How it works](#how-it-works)
+- [What you get](#what-you-get)
+- [What you control](#what-you-control)
+- [Start in 10 minutes](#start-in-10-minutes)
+- [A practical first week](#a-practical-first-week)
+- [Architecture](#architecture)
+- [Costs and safety](#costs-and-safety)
+- [Contributing](#contributing)
+
+## Who this is for
+
+| If you are… | Social Machine helps you… |
 | --- | --- |
-| Hunting for ideas in multiple tabs | Monitors, source curation and trend discovery |
-| Copy that sounds generic | Workspace-level voice, prompts and quality rules |
-| Publishing without a review trail | Draft → review → approval → publication |
-| Guessing what worked | Performance signals and evaluation history |
-| A vendor owning the workflow | Your Supabase project, your deployment, your credentials |
+| **An in-house content team** | Make the editorial process repeatable without losing approval control. |
+| **An agency** | Give each client a separate workspace, voice and operating rules. |
+| **A founder or marketer** | Move from scattered ideas to a visible queue of reviewed drafts. |
+| **A builder** | Extend an open system instead of rebuilding monitoring, review and publishing plumbing. |
 
-## What happens in one run?
+It is not a “post everything automatically” tool. It is a content operating
+system for teams that care about quality, traceability and control.
+
+## How it works
 
 ```mermaid
 flowchart LR
-  A[Discover\ntrends & sources] --> B[Curate\nrelevant ideas]
-  B --> C[Write\nchannel-ready drafts]
-  C --> D[Review\nquality & brand rules]
-  D --> E{Approved?}
-  E -- Yes --> F[Publish\nwhen you enable it]
-  E -- Needs work --> C
-  F --> G[Measure\nand improve]
-  G --> B
+  A[1. Discover\nTrends and trusted sources] --> B[2. Curate\nRank relevance and remove duplicates]
+  B --> C[3. Create\nDrafts for each selected channel]
+  C --> D[4. Review\nQuality checks + human decision]
+  D -->|Approved| E[5. Publish\nOnly when you enable it]
+  D -->|Improve| C
+  E --> F[6. Learn\nPerformance informs the next run]
+  F --> B
 ```
 
-Every stage is visible in the dashboard and can be configured per workspace.
+<p align="center"><em>One loop. One workspace. Clear decisions at every step.</em></p>
 
-## Built for real content operations
+### What makes the loop useful
 
-- **Editorial pipeline:** monitor, curator, writer, reviewer and publisher agents.
-- **Human control:** keep publishing manual, approval-based, or selectively automated.
-- **Multi-channel foundation:** X, LinkedIn, Instagram, YouTube and optional video workflows.
-- **Brand-adaptable:** workspace settings, agent prompts and feature flags — not a bundled company profile.
-- **Quality by design:** deduplication, configurable review thresholds and evaluation data.
-- **Safe starting point:** no credentials, social accounts, workspace IDs or schedules are included.
+- **Discovery is not random:** monitor sources and trends, then rank candidates.
+- **Creation is not detached from context:** drafts carry the source and workspace rules forward.
+- **Approval is not an afterthought:** review is a stage, not a checkbox added after publishing.
+- **Automation is earned:** start manually; enable publishing, video, or AI modules only when ready.
+- **Learning is retained:** evaluation and performance data stay with the workspace.
 
-## Get running locally
+## What you get
 
-You need Node.js, a Supabase project, and a Supabase Auth user. External AI and
-social integrations are optional.
+| Capability | What it means in practice |
+| --- | --- |
+| **Content pipeline** | Monitor, curator, writer, reviewer and publisher stages in one workflow. |
+| **Editorial control** | Configurable prompts, thresholds, deduplication and approval gates per workspace. |
+| **Multi-channel foundation** | X, LinkedIn, Instagram, YouTube and optional video workflows. |
+| **Workspace isolation** | Brand configuration, accounts and settings belong to the workspace that owns them. |
+| **Operational visibility** | Dashboard views for pipeline activity, drafts, evaluations and configuration. |
+| **Safe extensibility** | Optional modules stay off by default; contribute your own integrations cleanly. |
+
+## What you control
+
+This is the difference between installing software and adopting someone else’s
+content strategy.
+
+```text
+YOU OWN                              THE TEMPLATE PROVIDES
+────────                              ─────────────────────
+Your Supabase project                The workflow foundation
+Your social accounts                 Configurable pipeline stages
+Your editorial voice                 Review, dedup and safety mechanisms
+Your AI provider choices             Optional integration adapters
+Your publishing policy               A dashboard and extensible codebase
+Your deployment                      MIT-licensed source code
+```
+
+No social account, token, workspace ID, deployment or scheduled job is bundled.
+
+## Start in 10 minutes
+
+### 1. Clone and install
 
 ```bash
 git clone https://github.com/luisroquette/social-machine-for-all.git
@@ -66,21 +127,54 @@ npm ci
 npm run dev
 ```
 
-Then:
+### 2. Connect your own database
 
-1. Add your three Supabase values to `.env.local`.
-2. Apply the migrations in [`supabase/migrations`](supabase/migrations).
-3. Create a Supabase Auth user and sign in.
-4. Open [`/onboarding`](http://localhost:3000/onboarding) to create your workspace.
-5. Configure sources, voice and approval settings before enabling any integration.
+Create a Supabase project, add the three Supabase variables to `.env.local`, and
+apply the migrations in [`supabase/migrations`](supabase/migrations).
 
-For a first run, use the dashboard to create drafts and approve them manually.
-That gives you the full workflow before connecting an AI provider or social account.
+### 3. Create your first workspace
 
-## Make it yours
+Create a Supabase Auth user, sign in, and open
+[`/onboarding`](http://localhost:3000/onboarding). Add your company name, a short
+description and the topics you want to cover.
 
-The template is intentionally conservative. Optional capabilities are off until
-you explicitly enable them in `workspace_settings`:
+### 4. Run the safe path first
+
+Configure sources and create drafts. Review them manually. Only then connect an
+AI provider, social account, publishing integration or schedule.
+
+## A practical first week
+
+| Day | Outcome |
+| --- | --- |
+| **Day 1** | One workspace, your voice, your topics, no publishing enabled. |
+| **Day 2** | A curated queue of relevant ideas instead of an empty calendar. |
+| **Day 3** | Drafts moving through your review rules. |
+| **Day 4** | Approval flow calibrated with your team’s feedback. |
+| **Day 5+** | Enable only the integrations that your process has earned. |
+
+This sequencing is deliberate: quality and control come before volume.
+
+## Architecture
+
+```mermaid
+flowchart TB
+  UI[Next.js dashboard] --> API[Application API]
+  API --> DB[(Your Supabase project)]
+  API --> PIPE[Workspace pipeline]
+  PIPE --> SETTINGS[Workspace settings\nvoice · sources · feature flags]
+  PIPE -. optional .-> AI[Your AI provider]
+  PIPE -. optional .-> SOCIAL[Your social accounts]
+  PIPE -. optional .-> VIDEO[Your video renderer]
+```
+
+The optional edges are intentionally optional. A useful first installation does
+not require every provider or every automation.
+
+## Make it your own
+
+Capabilities are enabled per workspace through `workspace_settings`, never by a
+hard-coded company profile:
 
 - `feature_instagram_image_generation`
 - `feature_evergreen_content`
@@ -91,21 +185,16 @@ you explicitly enable them in `workspace_settings`:
 - `feature_negative_ev_guardrail`
 - `feature_ev_market_curation`
 
-Set a value to `true` (or `1`) only after configuring that workflow. Your brand
-voice belongs in the workspace and agent system prompts, so a fork begins as
-your company — not someone else’s.
+Set a value to `true` (or `1`) only after the corresponding editorial and
+technical setup is ready. Put your voice in workspace and agent system prompts.
 
-## Deployment, privacy and costs
+## Costs and safety
 
-You operate the system in your own Supabase project and deployment. Nothing is
-shared with the maintainers.
-
-- AI, video, email, analytics and social integrations may have third-party costs.
-- Credentials are never bundled; only add the services you intend to use.
-- Publishing and scheduled jobs remain disabled until you configure them.
-- `WORKSPACE_ID` is empty by default. Never copy an ID from another installation.
-
-Before making a fork public, run:
+- The core template is [MIT licensed](LICENSE).
+- AI, social, video, analytics and email services can have third-party costs.
+- Publishing and scheduled jobs are disabled until you deliberately configure them.
+- `WORKSPACE_ID` is empty by default. Never reuse one from another installation.
+- Before publishing a fork, run:
 
 ```bash
 npm run audit:public-release
@@ -113,15 +202,17 @@ npm test
 npm run build
 ```
 
-See [SECURITY.md](SECURITY.md) for vulnerability reporting and
-[CONTRIBUTING.md](CONTRIBUTING.md) if you want to improve the project.
+Read [SECURITY.md](SECURITY.md) before reporting a vulnerability.
 
-## Who is this for?
+## Contributing
 
-Teams, agencies and builders who want to turn a content process into a system:
-without giving up ownership of their workflow, data or editorial decisions.
+The best contributions make the system more reusable: better onboarding, safer
+defaults, new optional adapters, accessibility improvements and clearer docs.
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. Keep every
+contribution brand-neutral and never include credentials, customer content,
+account handles or workspace IDs.
 
 ## License
 
-Released under the [MIT License](LICENSE). Use it, adapt it and ship it for your
-own company.
+MIT — use it, adapt it and build the content operation your company needs.
