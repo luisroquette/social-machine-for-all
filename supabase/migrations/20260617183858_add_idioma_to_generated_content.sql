@@ -1,0 +1,1 @@
+ALTER TABLE generated_content ADD COLUMN IF NOT EXISTS idioma TEXT NOT NULL DEFAULT 'pt';;

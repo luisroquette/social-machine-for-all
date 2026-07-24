@@ -1,0 +1,108 @@
+{
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ':!README.md' ':!docs/**' ':!.github/**'",
+  "alias": [
+    "social-machine-v31.vercel.app"
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/scheduler",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/cleanup-storage",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/discover-sources",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/trend-discovery-br",
+      "schedule": "0 7,10,13,16,19,22 * * *"
+    },
+    {
+      "path": "/api/cron/trend-creative-prepare",
+      "schedule": "10 7,10,13,16,19,22 * * *"
+    },
+    {
+      "path": "/api/cron/trend-video-animate",
+      "schedule": "20 7,10,13,16,19,22 * * *"
+    },
+    {
+      "path": "/api/cron/trend-video-publish",
+      "schedule": "30 20 * * *"
+    },
+    {
+      "path": "/api/cron/trend-video-metrics",
+      "schedule": "45 21 * * *"
+    },
+    {
+      "path": "/api/cron/reels-metrics",
+      "schedule": "0 21 * * *"
+    },
+    {
+      "path": "/api/cron/reels-metrics-brand",
+      "schedule": "0 21 * * *"
+    },
+    {
+      "path": "/api/cron/reels-prepare",
+      "schedule": "0,30 9-22 * * *"
+    },
+    {
+      "path": "/api/cron/reels-publish",
+      "schedule": "15 9-22 * * *"
+    },
+    {
+      "path": "/api/cron/evergreen-seed-brand",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/seasonal-brand",
+      "schedule": "0 11 * * *"
+    },
+    {
+      "path": "/api/cron/static-news-curate-brand",
+      "schedule": "45 7,11,17 * * *"
+    },
+    {
+      "path": "/api/cron/static-news-promote-brand",
+      "schedule": "50 7,11,17 * * *"
+    },
+    {
+      "path": "/api/cron/reels-prepare-brand",
+      "schedule": "0 8,12,18 * * *"
+    },
+    {
+      "path": "/api/cron/reels-prepare-brand-youtube",
+      "schedule": "15 8,12,18 * * *"
+    },
+    {
+      "path": "/api/cron/reels-publish?workspaceId=00000000-0000-0000-0000-000000000000",
+      "schedule": "30 8,12,18 * * *"
+    },
+    {
+      "path": "/api/cron/marketing-asset-publish-brand",
+      "schedule": "0 13 * * 1,3,5"
+    },
+    {
+      "path": "/api/cron/sync-ads",
+      "schedule": "0 11 * * *"
+    },
+    {
+      "path": "/api/cron/daily-report",
+      "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/cron/engagement-executor",
+      "schedule": "*/30 * * * *"
+    },
+    {
+      "path": "/api/cron/stories-publisher",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/instagram-comments",
+      "schedule": "*/5 * * * *"
+    }
+  ]
+}
