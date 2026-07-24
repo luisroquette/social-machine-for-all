@@ -39,16 +39,36 @@ the integrations and automations that make sense for your company.
 > Your data, credentials, editorial rules and publishing decisions stay in your
 > infrastructure. There is no bundled customer, account or hidden workspace.
 
+## Product tour
+
+<p align="center">
+  <img src="assets/social-machine-demo.svg" alt="Animated Social Machine product workflow preview" width="100%" />
+</p>
+
+<p align="center"><em>Illustrative workflow preview. The counters demonstrate state transitions, not claimed customer results.</em></p>
+
+<p align="center">
+  <a href="assets/social-machine-demo.mp4"><strong>▶ Watch the 13-second workflow video</strong></a>
+</p>
+
+Watch a signal move through curation, drafting, quality review and approval.
+Nothing is published merely because an AI generated it: the workspace owns the
+rules and the final decision.
+
 ## Table of contents
 
 - [Who this is for](#who-this-is-for)
 - [How it works](#how-it-works)
 - [What you get](#what-you-get)
+- [Compared with fragmented workflows](#compared-with-fragmented-workflows)
 - [What you control](#what-you-control)
 - [Start in 10 minutes](#start-in-10-minutes)
 - [A practical first week](#a-practical-first-week)
+- [Example pipeline record](#example-pipeline-record)
 - [Architecture](#architecture)
 - [Costs and safety](#costs-and-safety)
+- [Current limitations](#current-limitations)
+- [FAQ](#faq)
 - [Contributing](#contributing)
 
 ## Who this is for
@@ -96,6 +116,21 @@ flowchart LR
 | **Workspace isolation** | Brand configuration, accounts and settings belong to the workspace that owns them. |
 | **Operational visibility** | Dashboard views for pipeline activity, drafts, evaluations and configuration. |
 | **Safe extensibility** | Optional modules stay off by default; contribute your own integrations cleanly. |
+
+## Compared with fragmented workflows
+
+| | Spreadsheets + prompts | Basic scheduler | Social Machine |
+| --- | --- | --- | --- |
+| Source context survives to the draft | Depends on the operator | Usually no | Yes |
+| Duplicate detection | Manual | Limited | Built into curation |
+| Workspace-specific voice and rules | Copied between prompts | Template-level | Workspace-level |
+| Review state and feedback history | Scattered | Basic approval | First-class pipeline stage |
+| Publishing | Separate tool | Core feature | Optional final stage |
+| Performance feeds the next run | Manual analysis | Dashboard only | Evaluation loop |
+| Data location | Many vendors | Vendor cloud | Your Supabase project |
+
+Social Machine is most valuable when the problem is not “schedule this post,”
+but “make the entire content decision process repeatable.”
 
 ## What you control
 
@@ -155,6 +190,36 @@ AI provider, social account, publishing integration or schedule.
 
 This sequencing is deliberate: quality and control come before volume.
 
+## Example pipeline record
+
+Every draft remains connected to an operational trail. A simplified record looks
+like this:
+
+```json
+{
+  "workspace": "your-company",
+  "source": {
+    "url": "https://example.com/source",
+    "captured_at": "2026-07-24T12:00:00Z"
+  },
+  "curation": {
+    "relevance_score": 82,
+    "duplicate": false
+  },
+  "draft": {
+    "channel": "linkedin",
+    "status": "in_review"
+  },
+  "review": {
+    "quality_score": 8.4,
+    "decision": "approve"
+  }
+}
+```
+
+The exact database model is richer, but the principle is simple: the system
+keeps the source, decision and result connected.
+
 ## Architecture
 
 ```mermaid
@@ -203,6 +268,49 @@ npm run build
 ```
 
 Read [SECURITY.md](SECURITY.md) before reporting a vulnerability.
+
+## Current limitations
+
+- This is a self-hosted engineering project, not a managed SaaS service.
+- Setup currently expects comfort with Node.js, Supabase and environment variables.
+- Social platform APIs can require app review and can change independently of this repository.
+- Advanced video workflows require a separately configured renderer.
+- There is no bundled AI credit, social account, demo data or production support contract.
+
+These constraints are explicit so teams can evaluate the project before investing
+in an integration.
+
+## FAQ
+
+### Does it publish automatically after installation?
+
+No. Publishing and scheduled jobs are disabled until you deliberately configure
+and enable them.
+
+### Do I need every AI provider listed in the project?
+
+No. Providers are optional. Add only the credentials for the workflow you choose
+to enable.
+
+### Can an agency use it for multiple companies?
+
+Yes. The architecture is workspace-based. Settings, brand context and owned
+resources are resolved for the active workspace.
+
+### Where does the data live?
+
+In the Supabase project you configure. The maintainers do not receive your
+workspace content or credentials.
+
+### Is it free?
+
+The source code is MIT licensed. Your hosting, database, AI provider, video
+renderer and social platform usage may have separate costs.
+
+### Can I replace the default editorial logic?
+
+Yes. Adapt workspace settings, agent prompts, platform configuration and optional
+feature flags without relying on a hard-coded company profile.
 
 ## Contributing
 
