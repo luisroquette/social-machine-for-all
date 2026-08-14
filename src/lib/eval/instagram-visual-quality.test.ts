@@ -1,10 +1,16 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { reviewInstagramVisualQuality } from './instagram-visual-quality'
 
 describe('reviewInstagramVisualQuality', () => {
+  beforeEach(() => {
+    delete process.env.GEMINI_API_KEY
+    delete process.env.GEMINI_API_KEY_2
+  })
+
   afterEach(() => {
     vi.unstubAllGlobals()
     delete process.env.GEMINI_API_KEY
+    delete process.env.GEMINI_API_KEY_2
   })
 
   it('fails closed when the reviewer is unavailable', async () => {
