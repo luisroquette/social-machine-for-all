@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://luisroquette.github.io/social-machine-for-all/sitemap.xml

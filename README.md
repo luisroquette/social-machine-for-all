@@ -4,6 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/luisroquette/social-machine-for-all/actions/workflows/ci.yml"><img src="https://github.com/luisroquette/social-machine-for-all/actions/workflows/ci.yml/badge.svg" alt="CI status" /></a>
+  <a href="https://luisroquette.github.io/social-machine-for-all/"><img src="https://img.shields.io/badge/product%20site-live-52E0B3?style=flat-square" alt="Social Machine product site" /></a>
   <a href="https://github.com/luisroquette/RocketLabs"><img src="https://img.shields.io/badge/RocketLabs-open%20system-7C5CFC?style=flat-square" alt="Part of RocketLabs" /></a>
   <a href="https://github.com/luisroquette/social-machine-for-all/releases/latest"><img src="https://img.shields.io/github/v/release/luisroquette/social-machine-for-all?style=flat-square&color=52E0B3" alt="Latest release" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-52E0B3?style=flat-square" alt="MIT License" /></a>
