@@ -1,0 +1,51 @@
+.stage-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-top: 22px;
+  padding: 6px;
+  background: #091b28;
+  border: 1px solid #24485d;
+  border-radius: 12px;
+}
+
+.stage-tabs button {
+  padding: 10px 7px;
+  color: #6f8c9e;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font: 720 .55rem ui-monospace, monospace;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.stage-tabs button[aria-selected="true"] {
+  color: var(--night);
+  background: var(--mint);
+}
+
+.switchboard article {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  padding: 17px 0;
+}
+
+.switchboard article b {
+  color: #607f91;
+  font: 720 .52rem ui-monospace, monospace;
+  letter-spacing: .08em;
+}
+
+.switchboard article b.enabled { color: var(--mint); }
+.switchboard > small { color: #7d9bac; line-height: 1.55; }
+.switchboard > em {
+  display: block;
+  margin-top: 10px;
+  color: #4f6e80;
+  font: 600 .5rem ui-monospace, monospace;
+  font-style: normal;
+  letter-spacing: .04em;
+}
