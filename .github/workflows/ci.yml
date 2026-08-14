@@ -31,6 +31,7 @@ jobs:
       - run: npm ci
       - run: npm run audit:public-release
       - run: npm run audit:runtime
+      - run: node scripts/validate-product-site.mjs
       - run: npm run lint
       - run: npm test
       - run: npm run build
