@@ -4,6 +4,7 @@ import { generateSimpleText } from '@/lib/ai/tool-loop'
 import { parseAIJson } from '@/lib/ai/parse-json'
 import { getAdminClient } from '@/lib/supabase/admin'
 import { hasDraftForCuratedItem } from '@/lib/pipeline/dedup'
+import { loadXBackpressure } from '@/lib/pipeline/x-backpressure'
 import { loadPlatformConfigs, type PlatformConfig } from '@/lib/settings/platform-config'
 import { getVariable, getNumericVariable } from '@/lib/settings/load-settings'
 import { loadWorkspaceFeatures, type WorkspaceFeatures } from '@/lib/config/workspace-features'
@@ -268,6 +269,7 @@ class WriterAgent extends BaseAgent {
     // Time guard: stop gracefully before Vercel function timeout (maxDuration=300s)
     let skippedDuplicates = 0
     let timeoutReached = false
+    const xBackpressure = new Map<'x' | 'thread', Awaited<ReturnType<typeof loadXBackpressure>>>()
 
     for (const item of itemsToProcess) {
       if (timeoutReached) break
@@ -362,6 +364,18 @@ class WriterAgent extends BaseAgent {
             sourceText.length > 280 ||
             /\b1\/\d+\b|\b1 of \d+\b|\b\(1\)/i.test(sourceText)
           )
+          if (isXPlatform) {
+            const format = sourceIsThread ? 'thread' : 'x'
+            let pressure = xBackpressure.get(format)
+            if (!pressure) {
+              pressure = await loadXBackpressure(supabase, ctx.workspaceId, format)
+              xBackpressure.set(format, pressure)
+            }
+            if (pressure.blocked) {
+              errors.push(`X ${format} generation paused by backlog guard: ${pressure.reason}`)
+              continue
+            }
+          }
           const formatInstruction = isXPlatform
             ? sourceIsThread
               ? `FORMATO OBRIGATÓRIO: Thread (fonte original é longa/thread). Use OPCAO B.`
